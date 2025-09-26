@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tora_frontend/features/child/child_main_screen.dart';
+import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
 
 void main() {
   runApp(const MyApp());

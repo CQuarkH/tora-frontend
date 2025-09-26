@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:tora_frontend/features/child/calendar/child_calendar_screen.dart';
+import 'package:tora_frontend/features/child/screens/calendar/child_calendar_screen.dart';
 
 class ChildMainScreen extends HookWidget {
   const ChildMainScreen({super.key});
