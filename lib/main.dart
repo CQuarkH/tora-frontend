@@ -13,8 +13,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tora App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.deepPurple[50],
+          selectedItemColor: Colors.deepPurple[800],
+          unselectedItemColor: Colors.deepPurple[400],
+        ),
       ),
       home: const ChildMainScreen(),
     );

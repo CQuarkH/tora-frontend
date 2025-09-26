@@ -17,4 +17,19 @@ class Child extends User {
     required this.grade,
     required this.parentId,
   }) : super(role: UserRole.CHILD);
+
+  static Child createSampleChild() {
+    final now = DateTime.now();
+    return Child(
+      id: 'child_123',
+      email: 'child@example.com',
+      passwordHash: 'hashed_password',
+      createdAt: now,
+      updatedAt: now,
+      name: 'María',
+      age: 8,
+      grade: '3° básico',
+      parentId: 'parent_456',
+    );
+  }
 }

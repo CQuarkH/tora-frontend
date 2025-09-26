@@ -16,6 +16,96 @@ class Calendar {
     required this.date,
     required this.blocks,
   });
+
+  static Calendar createSampleCalendar(String childId, {DateTime? date}) {
+    final now = date ?? DateTime.now();
+    final calendarId = 'cal_${now.millisecondsSinceEpoch}';
+
+    return Calendar(
+      id: calendarId,
+      childId: childId,
+      date: DateTime(now.year, now.month, now.day),
+      blocks: [
+        CalendarBlock(
+          id: 'block_morning_$calendarId',
+          calendarId: calendarId,
+          period: Period.MORNING,
+          tasks: [
+            Task(
+              id: 'task_1',
+              blockId: 'block_morning_$calendarId',
+              title: 'Lavarme los dientes',
+              description: 'Cepillarse los dientes por 2 minutos',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+            Task(
+              id: 'task_2',
+              blockId: 'block_morning_$calendarId',
+              title: 'Vestirme',
+              description: 'Ponerme el uniforme escolar',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+            Task(
+              id: 'task_3',
+              blockId: 'block_morning_$calendarId',
+              title: 'Desayunar',
+              description: 'Tomar desayuno saludable',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+          ],
+        ),
+        CalendarBlock(
+          id: 'block_afternoon_$calendarId',
+          calendarId: calendarId,
+          period: Period.AFTERNOON,
+          tasks: [
+            Task(
+              id: 'task_4',
+              blockId: 'block_afternoon_$calendarId',
+              title: 'Hacer tareas',
+              description: 'Completar las tareas del colegio',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+            Task(
+              id: 'task_5',
+              blockId: 'block_afternoon_$calendarId',
+              title: 'Jugar',
+              description: 'Tiempo libre para jugar',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+          ],
+        ),
+        CalendarBlock(
+          id: 'block_evening_$calendarId',
+          calendarId: calendarId,
+          period: Period.EVENING,
+          tasks: [
+            Task(
+              id: 'task_6',
+              blockId: 'block_evening_$calendarId',
+              title: 'Cenar',
+              description: 'Cenar en familia',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+            Task(
+              id: 'task_7',
+              blockId: 'block_evening_$calendarId',
+              title: 'Preparar mochila',
+              description: 'Preparar materiales para mañana',
+              status: TaskStatus.PENDING,
+              createdAt: now,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class CalendarBlock {
