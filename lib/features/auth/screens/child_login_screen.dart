@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/widgets/login_card.dart';
+import 'package:tora_frontend/core/router/router.dart';
 
 class ChildLoginScreen extends HookWidget {
   const ChildLoginScreen({super.key});
@@ -69,18 +71,21 @@ class ChildLoginScreen extends HookWidget {
 
   void _handleChildLogin(BuildContext context, String email, String password) {
     // Validación básica
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, completa todos los campos'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
+    // if (email.isEmpty || password.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Por favor, completa todos los campos'),
+    //       backgroundColor: Colors.orange,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     // Lógica específica para login de niños
-    // Aquí puedes agregar validaciones específicas para niños
+    // Actualizar el estado del usuario
+    UserSession.setUserType(UserType.child);
+    
+    // Mostrar mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('¡Bienvenido de vuelta, pequeño aventurero!'),
@@ -88,8 +93,7 @@ class ChildLoginScreen extends HookWidget {
       ),
     );
 
-    // Navegación específica para niños después del login exitoso
-    // TODO: Agregar lógica de autenticación real
-    // context.go('/child');
+    // Navegar a la vista principal del niño
+    context.go('/child');
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/widgets/login_card.dart';
+import 'package:tora_frontend/core/router/router.dart';
 
 class ParentLoginScreen extends HookWidget {
   const ParentLoginScreen({super.key});
@@ -82,7 +83,10 @@ class ParentLoginScreen extends HookWidget {
     }
 
     // Lógica específica para login de padres
-    // Aquí puedes agregar validaciones específicas para padres
+    // Actualizar el estado del usuario
+    UserSession.setUserType(UserType.parent);
+    
+    // Mostrar mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('¡Bienvenido! Iniciando sesión...'),
@@ -90,9 +94,8 @@ class ParentLoginScreen extends HookWidget {
       ),
     );
 
-    // Navegación específica para padres después del login exitoso
-    // TODO: Agregar lógica de autenticación real
-    // context.go('/parent');
+    // Navegar a la vista principal del padre
+    context.go('/parent');
   }
 
   void _handleCreateAccount(BuildContext context) {
