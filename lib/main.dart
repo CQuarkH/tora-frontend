@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tora_frontend/features/auth/screens/fork_users_screen.dart';
+import 'package:tora_frontend/core/router/router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,12 +8,12 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Tora App',
       debugShowCheckedModeBanner: false,
+      routerConfig: appRouter,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.deepPurple[400],
         ),
       ),
-      home: const ForkUsersScreen(),
     );
   }
 }

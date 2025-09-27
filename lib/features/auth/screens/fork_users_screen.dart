@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:tora_frontend/features/auth/screens/login_users_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/widgets/user_type_card.dart';
-import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
 
 class ForkUsersScreen extends HookWidget {
   const ForkUsersScreen({super.key});
@@ -151,18 +150,10 @@ class ForkUsersScreen extends HookWidget {
   void _navigateToUserScreen(BuildContext context, String userType) {
     switch (userType) {
       case 'child':
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const ChildMainScreen(),
-          ),
-        );
+        context.go('/child-main');
         break;
       case 'parent':
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginUsersScreen(),
-          ),
-        );
+        context.go('/login');
         break;
     }
   }

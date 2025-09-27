@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tora_frontend/features/auth/screens/register_user_steep_two_screen.dart';
 
 class RegisterUserStepOneScreen extends HookWidget {
   const RegisterUserStepOneScreen({super.key});
@@ -230,6 +232,8 @@ class RegisterUserStepOneScreen extends HookWidget {
     String childEmail,
     String tutorEmail,
   ) {
+
+    context.go('/register-step-two');
     // Basic validation
     if (childName.isEmpty ||
         age.isEmpty ||
@@ -274,14 +278,9 @@ class RegisterUserStepOneScreen extends HookWidget {
       const SnackBar(
         content: Text('¡Datos guardados correctamente!'),
         backgroundColor: Colors.green,
-      ),
+      ), 
     );
 
-    // TODO: Navigate to step 2 or save data
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (context) => const RegisterUserStepTwoScreen(),
-    //   ),
-    // );
+    context.go('/register-step-two');
   }
 }

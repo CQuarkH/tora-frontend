@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:tora_frontend/features/auth/screens/register_user_steep_one_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/widgets/login_card.dart';
 
 class LoginUsersScreen extends HookWidget {
@@ -62,8 +62,6 @@ class LoginUsersScreen extends HookWidget {
       return;
     }
 
-    // For now, just show a success message
-    // In a real app, you would validate credentials with your backend
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('¡Iniciando sesión...!'),
@@ -71,17 +69,10 @@ class LoginUsersScreen extends HookWidget {
       ),
     );
 
-    // TODO: Navigate to the appropriate screen after successful login
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (context) => const ForkUsersScreen()),
-    // );
   }
 
   void _handleCreateAccount(BuildContext context) {
-    // Navigate to registration screen
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const RegisterUserStepOneScreen()),
-    );
+    context.go('/register-step-one');
 
    
   }
