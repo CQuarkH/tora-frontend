@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:tora_frontend/features/auth/screens/register_user_steep_one_screen.dart';
 import 'package:tora_frontend/features/auth/widgets/login_card.dart';
 
 class LoginUsersScreen extends HookWidget {
@@ -37,6 +38,7 @@ class LoginUsersScreen extends HookWidget {
                     passwordController: passwordController,
                     obscureText: obscureText,
                     onLogin: () => _handleLogin(context, emailController.text, passwordController.text),
+                    onCreateAccount: () => _handleCreateAccount(context),
                   ),
                   const SizedBox(height: 40),
                 ],
@@ -73,5 +75,14 @@ class LoginUsersScreen extends HookWidget {
     // Navigator.of(context).pushReplacement(
     //   MaterialPageRoute(builder: (context) => const ForkUsersScreen()),
     // );
+  }
+
+  void _handleCreateAccount(BuildContext context) {
+    // Navigate to registration screen
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const RegisterUserStepOneScreen()),
+    );
+
+   
   }
 }

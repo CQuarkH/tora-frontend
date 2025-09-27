@@ -3,13 +3,14 @@ import 'package:tora_frontend/features/auth/widgets/tiger_mascot.dart';
 import 'package:tora_frontend/features/auth/widgets/welcome_text.dart';
 import 'package:tora_frontend/features/auth/widgets/login_form.dart';
 import 'package:tora_frontend/features/auth/widgets/login_button.dart';
-import 'package:tora_frontend/features/auth/widgets/dots_indicator.dart';
+import 'package:tora_frontend/features/auth/widgets/create_account_button.dart';
 
 class LoginCard extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final ValueNotifier<bool> obscureText;
   final VoidCallback onLogin;
+  final VoidCallback? onCreateAccount;
 
   const LoginCard({
     super.key,
@@ -17,6 +18,7 @@ class LoginCard extends StatelessWidget {
     required this.passwordController,
     required this.obscureText,
     required this.onLogin,
+    this.onCreateAccount,
   });
 
   @override
@@ -48,7 +50,9 @@ class LoginCard extends StatelessWidget {
           const SizedBox(height: 32),
           LoginButton(onPressed: onLogin),
           const SizedBox(height: 24),
-          const DotsIndicator(),
+          CreateAccountButton(
+            onPressed: onCreateAccount,
+          ),
         ],
       ),
     );
