@@ -55,23 +55,19 @@ class CustomBottomNavBar extends StatelessWidget {
                 children: [
                   _buildNavItem(
                     index: 0,
-                    icon: Icons.calendar_today_rounded,
-                    iconColor: Colors.blue[700]!,
+                    pngPath: 'assets/images/icons/calendar.png',
                   ),
                   _buildNavItem(
                     index: 1,
-                    icon: Icons.lightbulb_rounded,
-                    iconColor: Colors.orange[700]!,
+                    pngPath: 'assets/images/icons/lightbulb.png',
                   ),
                   _buildNavItem(
                     index: 2,
-                    icon: Icons.pets_rounded,
-                    iconColor: Colors.orange[700]!,
+                    pngPath: 'assets/images/icons/paw.png',
                   ),
                   _buildNavItem(
                     index: 3,
-                    icon: Icons.forum_rounded,
-                    iconColor: Colors.cyan[700]!,
+                    pngPath: 'assets/images/icons/communication.png',
                   ),
                 ],
               ),
@@ -85,10 +81,14 @@ class CustomBottomNavBar extends StatelessWidget {
 
   Widget _buildNavItem({
     required int index,
-    required IconData icon,
-    required Color iconColor,
+    IconData? iconData,
+    String? pngPath,
   }) {
     final isSelected = selectedIndex == index;
+    
+    // Validación: debe tener iconData O pngPath, pero no ambos
+    assert((iconData != null) ^ (pngPath != null), 
+           'Debes proporcionar iconData O pngPath, pero no ambos');
     
     return GestureDetector(
       onTap: () => onItemTapped(index),
@@ -98,13 +98,35 @@ class CustomBottomNavBar extends StatelessWidget {
         width: 50,
         height: 50,
         child: Center(
-          child: Icon(
-            icon,
-            color: isSelected ? iconColor : iconColor.withOpacity(0.5),
+          child: _buildIconWidget(
+            iconData: iconData,
+            pngPath: pngPath,
             size: isSelected ? 28 : 24,
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildIconWidget({
+    IconData? iconData,
+    String? pngPath,
+    required double size,
+  }) {
+    if (pngPath != null) {
+      // Renderizar PNG sin color filter
+      return Image.asset(
+        pngPath,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
+    } else {
+      // Renderizar icono Material
+      return Icon(
+        iconData,
+        size: size,
+      );
+    }
   }
 }
