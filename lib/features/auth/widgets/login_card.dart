@@ -11,6 +11,7 @@ class LoginCard extends StatelessWidget {
   final ValueNotifier<bool> obscureText;
   final VoidCallback onLogin;
   final VoidCallback? onCreateAccount;
+  final bool showCreateAccount;
 
   const LoginCard({
     super.key,
@@ -19,6 +20,7 @@ class LoginCard extends StatelessWidget {
     required this.obscureText,
     required this.onLogin,
     this.onCreateAccount,
+    this.showCreateAccount = true,
   });
 
   @override
@@ -49,10 +51,12 @@ class LoginCard extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           LoginButton(onPressed: onLogin),
-          const SizedBox(height: 24),
-          CreateAccountButton(
-            onPressed: onCreateAccount,
-          ),
+          if (showCreateAccount) ...[
+            const SizedBox(height: 24),
+            CreateAccountButton(
+              onPressed: onCreateAccount,
+            ),
+          ],
         ],
       ),
     );

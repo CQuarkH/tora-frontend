@@ -150,10 +150,10 @@ class ForkUsersScreen extends HookWidget {
   void _navigateToUserScreen(BuildContext context, String userType) {
     switch (userType) {
       case 'child':
-        context.go('/child-main');
+        context.go('/child-login');
         break;
       case 'parent':
-        context.go('/login');
+        context.go('/parent-login');
         break;
     }
   }

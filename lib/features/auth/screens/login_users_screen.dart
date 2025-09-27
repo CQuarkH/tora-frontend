@@ -4,7 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/widgets/login_card.dart';
 
 class LoginUsersScreen extends HookWidget {
-  const LoginUsersScreen({super.key});
+  final bool showCreateAccount;
+  
+  const LoginUsersScreen({
+    super.key,
+    this.showCreateAccount = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,8 @@ class LoginUsersScreen extends HookWidget {
                     passwordController: passwordController,
                     obscureText: obscureText,
                     onLogin: () => _handleLogin(context, emailController.text, passwordController.text),
-                    onCreateAccount: () => _handleCreateAccount(context),
+                    onCreateAccount: showCreateAccount ? () => _handleCreateAccount(context) : null,
+                    showCreateAccount: showCreateAccount,
                   ),
                   const SizedBox(height: 40),
                 ],

@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/screens/fork_users_screen.dart';
-import 'package:tora_frontend/features/auth/screens/login_users_screen.dart';
+import 'package:tora_frontend/features/auth/screens/child_login_screen.dart';
+import 'package:tora_frontend/features/auth/screens/parent_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/register_user_steep_one_screen.dart';
 import 'package:tora_frontend/features/auth/screens/register_user_steep_two_screen.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
@@ -36,13 +37,16 @@ final GoRouter appRouter = GoRouter(
     final bool isLoggedIn = UserSession.isLoggedIn;
     final String location = state.uri.path;
 
-    // Si no está logueado y trata de acceder a rutas protegidas
-    if (!isLoggedIn && (location.startsWith('/child') || location.startsWith('/parent'))) {
+    // Rutas de autenticación que no requieren redirección
+    const authRoutes = ['/', '/child-login', '/parent-login', '/register-step-one', '/register-step-two'];
+    
+    // Si no está logueado y trata de acceder a rutas protegidas (pero no a rutas de auth)
+    if (!isLoggedIn && !authRoutes.contains(location) && (location.startsWith('/child') || location.startsWith('/parent'))) {
       return '/';
     }
 
-    // Si está logueado y trata de acceder a auth, redirigir según tipo de usuario
-    if (isLoggedIn && (location == '/' || location.startsWith('/auth'))) {
+    // Si está logueado y trata de acceder a la pantalla inicial, redirigir según tipo de usuario
+    if (isLoggedIn && location == '/') {
       if (UserSession.currentUserType == UserType.child) {
         return '/child';
       } else if (UserSession.currentUserType == UserType.parent) {
@@ -61,9 +65,15 @@ final GoRouter appRouter = GoRouter(
     ),
     
     GoRoute(
-      path: '/login',
-      name: 'login',
-      builder: (context, state) => const LoginUsersScreen(),
+      path: '/child-login',
+      name: 'child-login',
+      builder: (context, state) => const ChildLoginScreen(),
+    ),
+    
+    GoRoute(
+      path: '/parent-login',
+      name: 'parent-login',
+      builder: (context, state) => const ParentLoginScreen(),
     ),
     
     GoRoute(
