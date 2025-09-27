@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:tora_frontend/features/child/screens/calendar/child_calendar_screen.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
 
-class ChildMainScreen extends HookWidget {
-  const ChildMainScreen({super.key});
+class ParentMainScreen extends HookWidget {
+  const ParentMainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final selectedIndex = useState(0);
 
     final Map<String, Widget> pages = {
-      'Calendario': ChildCalendarScreen(),
-      'Recomendaciones': const Placeholder(),
-      'Mascota': const Placeholder(),
-      'Comunicación': const Placeholder(),
+      'Dashboard': const Center(child: Text('Dashboard - En desarrollo')),
+      'Progreso del Niño': const Center(child: Text('Progreso del Niño - En desarrollo')),
+      'Contactos de Emergencia': const Center(child: Text('Contactos de Emergencia - En desarrollo')),
+      'Configuración': const Center(child: Text('Configuración - En desarrollo')),
     };
 
     return Scaffold(
@@ -38,31 +37,40 @@ class ChildMainScreen extends HookWidget {
         actions: [
           LogoutHelper.logoutAppBarAction(
             context, 
-            customMessage: '¿Estás seguro de que quieres salir de tu aventura?'
+            customMessage: '¿Está seguro de que desea cerrar sesión?'
           ),
         ],
       ),
-      body: pages.entries.elementAt(selectedIndex.value).value,
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        child: pages.entries.elementAt(selectedIndex.value).value,
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendario',
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.psychology),
-            label: 'Recomendaciones',
+            icon: Icon(Icons.trending_up),
+            label: 'Progreso',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Mascota'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.record_voice_over),
-            label: 'Comunicación',
+            icon: Icon(Icons.contacts), 
+            label: 'Contactos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Configuración',
           ),
         ],
         currentIndex: selectedIndex.value,
         onTap: (index) {
           selectedIndex.value = index;
         },
+        selectedItemColor: Colors.green[700],
+        unselectedItemColor: Colors.grey[600],
       ),
     );
   }

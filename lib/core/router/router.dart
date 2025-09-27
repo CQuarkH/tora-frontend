@@ -7,6 +7,7 @@ import 'package:tora_frontend/features/auth/screens/parent_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/register_user_steep_one_screen.dart';
 import 'package:tora_frontend/features/auth/screens/register_user_steep_two_screen.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
+import 'package:tora_frontend/features/parent/screens/parent_main_screen.dart';
 
 // Enum para los tipos de usuario
 enum UserType { child, parent }
@@ -139,9 +140,7 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/parent',
           name: 'parent-home',
-          builder: (context, state) => const Scaffold(
-            body: Center(child: Text('Vista Principal del Apoderado - En desarrollo')),
-          ),
+          builder: (context, state) => const ParentMainScreen(),
           routes: [
             GoRoute(
               path: '/dashboard',
