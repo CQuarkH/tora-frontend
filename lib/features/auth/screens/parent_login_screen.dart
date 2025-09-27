@@ -32,9 +32,20 @@ class ParentLoginScreen extends HookWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+
+                //icono para volver a la pantalla anterior
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  color: Colors.green[800],
+                  iconSize: 30,
+                  onPressed: () => context.go('/'),
+                ),
+                ),
+                const SizedBox(height: 30),
                 
-                // Título específico para padres
+               
                 Text(
                   'Bienvenido, Tutor',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(

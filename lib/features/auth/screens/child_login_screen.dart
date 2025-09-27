@@ -32,7 +32,16 @@ class ChildLoginScreen extends HookWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  color: Colors.blue[800],
+                  iconSize: 30,
+                  onPressed: () => context.go('/'),
+                )),
+                const SizedBox(height: 30),
                 
                 // Título específico para niños
                 Text(
