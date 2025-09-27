@@ -7,7 +7,7 @@ import 'package:tora_frontend/features/child/models/task.dart';
 import 'package:tora_frontend/features/child/widgets/period_selector_section.dart';
 import 'package:tora_frontend/features/child/widgets/emotion_selector_section.dart';
 import 'package:tora_frontend/features/child/widgets/tasks_section.dart';
-import 'package:tora_frontend/features/child/widgets/period_info_section.dart';
+import 'package:tora_frontend/features/child/widgets/timers_section.dart';
 
 class ChildDayDetailScreen extends HookWidget {
   final Child currentChild;
@@ -166,11 +166,7 @@ class ChildDayDetailScreen extends HookWidget {
               const SizedBox(height: 20.0),
 
               // Información del período
-              PeriodInfoSection(
-                period: selectedPeriod.value,
-                childName: currentChild.name,
-                blockId: currentBlock.id,
-              ),
+              TimersSection(),
             ],
           ),
         ),

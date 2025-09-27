@@ -38,8 +38,8 @@ class ChildMainScreen extends HookWidget {
         ),
         actions: [
           LogoutHelper.logoutAppBarAction(
-            context, 
-            customMessage: '¿Estás seguro de que quieres salir de tu aventura?'
+            context,
+            customMessage: '¿Estás seguro de que quieres salir de tu aventura?',
           ),
         ],
       ),
@@ -47,7 +47,9 @@ class ChildMainScreen extends HookWidget {
         children: [
           // Contenido principal con padding inferior para evitar superposición
           Padding(
-            padding: const EdgeInsets.only(bottom: 100), // Espacio para la navbar
+            padding: const EdgeInsets.only(
+              bottom: 100,
+            ), // Espacio para la navbar
             child: pages.entries.elementAt(selectedIndex.value).value,
           ),
           // Navbar flotante
