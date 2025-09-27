@@ -23,6 +23,14 @@ class ChildMainScreen extends HookWidget {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         elevation: 0,
+        leadingWidth: 40,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Image.asset(
+            'assets/images/icons/tora.png',
+            fit: BoxFit.contain,
+          ),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
