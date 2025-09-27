@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:tora_frontend/features/child/screens/calendar/child_calendar_screen.dart';
+import 'package:tora_frontend/features/child/widgets/custom_bottom_nav_bar.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
 
 class ChildMainScreen extends HookWidget {
@@ -42,27 +43,26 @@ class ChildMainScreen extends HookWidget {
           ),
         ],
       ),
-      body: pages.entries.elementAt(selectedIndex.value).value,
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendario',
+      body: Stack(
+        children: [
+          // Contenido principal con padding inferior para evitar superposición
+          Padding(
+            padding: const EdgeInsets.only(bottom: 100), // Espacio para la navbar
+            child: pages.entries.elementAt(selectedIndex.value).value,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.psychology),
-            label: 'Recomendaciones',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Mascota'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.record_voice_over),
-            label: 'Comunicación',
+          // Navbar flotante
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: CustomBottomNavBar(
+              selectedIndex: selectedIndex.value,
+              onItemTapped: (index) {
+                selectedIndex.value = index;
+              },
+            ),
           ),
         ],
-        currentIndex: selectedIndex.value,
-        onTap: (index) {
-          selectedIndex.value = index;
-        },
       ),
     );
   }
