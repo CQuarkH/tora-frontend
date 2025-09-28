@@ -125,7 +125,7 @@ class ChildDayDetailScreen extends HookWidget {
         centerTitle: true,
         elevation: 0,
         title: Text(
-          '${currentChild.name} - ${currentCalendar.value.date.day}/${currentCalendar.value.date.month}/${currentCalendar.value.date.year}',
+          'Organizador - ${currentCalendar.value.date.day}/${currentCalendar.value.date.month}/${currentCalendar.value.date.year}',
           style: const TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w600,
