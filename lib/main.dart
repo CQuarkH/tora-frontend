@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tora_frontend/core/router/router.dart';
+import 'package:tora_frontend/core/theme/tora_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,14 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Tora App',
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.deepPurple[50],
-          selectedItemColor: Colors.deepPurple[800],
-          unselectedItemColor: Colors.deepPurple[400],
-        ),
-      ),
+      theme: ToraTheme.lightTheme,
     );
   }
 }

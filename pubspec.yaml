@@ -46,6 +46,7 @@ dependencies:
   vibration: ^3.1.4
   wakelock_plus: ^1.4.0
   flutter_local_notifications: ^19.4.2
+  hexcolor: ^3.0.1
 
 dev_dependencies:
   flutter_test:

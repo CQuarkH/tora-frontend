@@ -1,6 +1,7 @@
 // widgets/timers_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:tora_frontend/core/theme/tora_theme.dart';
 import '../models/timer.dart';
 import '../services/timer_service.dart';
 
@@ -20,6 +21,7 @@ class TimersSection extends HookWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.shade300),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
@@ -69,8 +71,8 @@ class TimersSection extends HookWidget {
                         icon: const Icon(Icons.add),
                         label: const Text('Crear primer timer'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
+                          backgroundColor: ToraTheme.warmYellow,
+                          foregroundColor: Colors.black87,
                         ),
                       ),
                     ],
