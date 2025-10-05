@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tora_frontend/features/child/screens/calendar/child_calendar_screen.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
+import 'package:dotted_border/dotted_border.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({super.key});
@@ -123,9 +124,65 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
             ),
           ],
         ),
-        title: 'Calendario',
         activeColorPrimary: Colors.blue,
         inactiveColorPrimary: Colors.grey,
+      ),
+
+      PersistentBottomNavBarItem(
+        icon: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 35,
+              child: Image.asset(
+                'assets/images/icons/topic.png',
+              ),
+            ),
+          ],
+        ),
+        inactiveIcon: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 30,
+              child: Opacity(
+                opacity: 0.6,
+                child: Image.asset(
+                  'assets/images/icons/topic.png',
+                ),
+              ),
+            ),
+          ],
+        ),
+        activeColorPrimary: Colors.green,
+        inactiveColorPrimary: Colors.grey,
+      ),
+      
+      PersistentBottomNavBarItem(
+        icon: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 50,
+              child: Image.asset(
+                'assets/images/icons/alert.png',
+              ),
+            ),
+          ],
+        ),
+        inactiveIcon: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 50,
+              child: Image.asset(
+                'assets/images/icons/alert.png',
+              ),
+            ),
+          ],
+        ),
+        activeColorPrimary: Colors.transparent,
+        inactiveColorPrimary: Colors.transparent,
       ),
       PersistentBottomNavBarItem(
         icon: Column(
@@ -153,39 +210,8 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
             ),
           ],
         ),
-        title: 'Mascota',
         activeColorPrimary: Colors.purple,
         inactiveColorPrimary: Colors.grey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 50,
-              child: Image.asset(
-                'assets/images/icons/alert.png',
-              ),
-            ),
-          ],
-        ),
-        inactiveIcon: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 50,
-              child: Opacity(
-                opacity: 0.6,
-                child: Image.asset(
-                  'assets/images/icons/alert.png',
-                ),
-              ),
-            ),
-          ],
-        ),
-        title: 'Alertas',
-        activeColorPrimary: Colors.transparent,
-        inactiveColorPrimary: Colors.transparent,
       ),
       PersistentBottomNavBarItem(
         icon: Column(
@@ -213,40 +239,10 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
             ),
           ],
         ),
-        title: 'Audio',
         activeColorPrimary: Colors.cyan,
         inactiveColorPrimary: Colors.grey,
       ),
-      PersistentBottomNavBarItem(
-        icon: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 35,
-              child: Image.asset(
-                'assets/images/icons/topic.png',
-              ),
-            ),
-          ],
-        ),
-        inactiveIcon: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 30,
-              child: Opacity(
-                opacity: 0.6,
-                child: Image.asset(
-                  'assets/images/icons/topic.png',
-                ),
-              ),
-            ),
-          ],
-        ),
-        title: 'Temas',
-        activeColorPrimary: Colors.green,
-        inactiveColorPrimary: Colors.grey,
-      ),
+      
     ];
   }
 }
