@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/widgets/user_type_card.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
@@ -52,7 +53,12 @@ class ForkUsersScreen extends HookWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 30),
+
+                      SvgPicture.asset(
+                        'assets/images/characters/tora_mano_arriba_saludo.svg',
+                        height: 200,
+                        width: 200,
+                      ),
 
                       /// 
                       Text(
@@ -121,7 +127,7 @@ class ForkUsersScreen extends HookWidget {
                                   const SizedBox(height: 20),
                                   Expanded(
                                     child: UserTypeCard(
-                                      title: 'Padre/Madre',
+                                      title: 'Tutor/a',
                                       description: 'Gestiona y supervisa las actividades de tu hijo/a de manera fácil y efectiva',
                                       icon: Icons.family_restroom,
                                       iconColor: context.darkText,

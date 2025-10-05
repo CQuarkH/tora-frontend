@@ -18,19 +18,18 @@ class EmergencyContactsScreen extends HookWidget {
   Widget build(BuildContext context) {
     final nameController = useTextEditingController();
     final phoneController = useTextEditingController(text: '+56 9 ');
-    final selectedRelation = useState<String?>('Tío/Tía');
+    final selectedRelation = useState<String?>('Padre/Madre');
     
     // Opciones de relación predefinidas
     final relationOptions = [
-      'Tío/Tía',
-      'Abuelo/Abuela',
-      'Hermano/Hermana',
-      'Primo/Prima',
-      'Amigo de la familia',
-      'Vecino/Vecina',
-      'Cuidador/Cuidadora',
-      'Otro familiar',
-    ];
+      'Padre/Madre',
+  'Familiar cercano/a',
+  'Vecino/a',
+  'Cuidador/a',
+  'Otro/a',
+];
+
+
     
     final emergencyContacts = useState<List<Map<String, String>>>(
       initialData['emergencyContacts'] != null 
@@ -76,7 +75,7 @@ class EmergencyContactsScreen extends HookWidget {
       // Limpiar campos
       nameController.clear();
       phoneController.text = '+56 9 ';
-      selectedRelation.value = 'Tío/Tía';
+      selectedRelation.value = 'Familiar cercano/a';
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

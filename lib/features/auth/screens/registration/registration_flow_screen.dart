@@ -17,12 +17,7 @@ class RegistrationFlowScreen extends HookWidget {
     final currentStep = useState(0);
     final registrationData = useState<Map<String, dynamic>>({});
 
-    final steps = [
-      'Datos del Niño',
-      'Datos del Padre/Tutor',
-      'Configurar Contraseñas',
-      'Contactos de Emergencia',
-    ];
+    
 
     void nextStep(Map<String, dynamic> stepData) {
       // Guardar datos del paso actual

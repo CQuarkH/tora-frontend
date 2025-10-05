@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
@@ -24,109 +24,113 @@ class ChildDataScreen extends HookWidget {
     final ageController = useTextEditingController(
       text: initialData['childAge']?.toString() ?? '',
     );
-    final gradeController = useTextEditingController(
-      text: initialData['childGrade'] ?? '',
-    );
+    final grades = [
+      '3° Básico',
+      '4° Básico', 
+      '5° Básico',
+    ];
+    
+    // Asegurar que el valor inicial sea válido o null
+    final initialGrade = initialData['childGrade'] as String?;
+    final validInitialGrade = grades.contains(initialGrade) ? initialGrade : null;
+    final selectedGrade = useState<String?>(validInitialGrade);
     final childEmailController = useTextEditingController(
       text: initialData['childEmail'] ?? '',
     );
 
     void handleNext() {
-      // if (formKey.currentState?.validate() ?? false) {
-        final data = {
-          'childName': childNameController.text.trim(),
-          'childAge': int.tryParse(ageController.text.trim()) ?? 0,
-          'childGrade': gradeController.text.trim(),
-          'childEmail': childEmailController.text.trim(),
-        };
-        onNext(data);
-      // }
+      final data = {
+        'childName': childNameController.text.trim(),
+        'childAge': int.tryParse(ageController.text.trim()) ?? 0,
+        'childGrade': selectedGrade.value ?? '',
+        'childEmail': childEmailController.text.trim(),
+      };
+      onNext(data);
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Form(
-        key: formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            Center(child: 
-            SvgPicture.asset('assets/images/characters/tora.svg', height: 200, width: 00,)),
-            // Icono y descripción
-           
-            
-            Center(
-              child: Text(
-                'Cuéntanos sobre tu \nhijo o hija',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: context.darkText,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            
-            Center(
-              child: Text(
-                'Completa algunos datos para personalizar su experiencia',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: context.mediumText,
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Formulario
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: context.pureWhite,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: ToraTheme.cardShadow,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Nombre completo
-                  Text(
-                    'Nombre Completo',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: context.darkText,
-                      fontWeight: FontWeight.w600,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTablet = constraints.maxWidth > 600;
+        final horizontalPadding = isTablet ? 48.0 : 16.0;
+        final maxWidth = isTablet ? 600.0 : double.infinity;
+        final isSmallScreen = constraints.maxWidth < 450;
+        
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: 24,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: SvgPicture.asset(
+                        'assets/images/characters/tora.svg',
+                        height: isTablet ? 250 : 180,
+                        width: isTablet ? 250 : 180,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: childNameController,
-                    decoration: InputDecoration(
-                      hintText: 'Ej: María José González',
-                      prefixIcon: Icon(Icons.person, color: context.mediumText),
+                    const SizedBox(height: 16),
+                    
+                    Center(
+                      child: Text(
+                        'Cuéntanos sobre tu \nhijo o hija',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isTablet ? 36 : 28,
+                          fontWeight: FontWeight.w900,
+                          color: context.darkText,
+                        ),
+                      ),
                     ),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'El nombre es obligatorio';
-                      }
-                      if (value!.length < 2) {
-                        return 'El nombre debe tener al menos 2 caracteres';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 8),
+                    
+                    Center(
+                      child: Text(
+                        'Completa algunos datos para personalizar su experiencia',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isTablet ? 18 : 16,
+                          fontWeight: FontWeight.w400,
+                          color: context.mediumText,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
 
-                  // Edad y Grado
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                    Container(
+                      padding: EdgeInsets.all(isTablet ? 32 : 20),
+                      decoration: BoxDecoration(
+                        color: context.pureWhite,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: ToraTheme.cardShadow,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Nombre Completo',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: context.darkText,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: childNameController,
+                            decoration: InputDecoration(
+                              hintText: 'Ej: María José González',
+                              prefixIcon: Icon(Icons.person, color: context.mediumText),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          if (isSmallScreen) ...[
                             Text(
                               'Edad',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -142,25 +146,8 @@ class ChildDataScreen extends HookWidget {
                                 hintText: '8',
                                 prefixIcon: Icon(Icons.cake, color: context.mediumText),
                               ),
-                              validator: (value) {
-                                if (value?.isEmpty ?? true) {
-                                  return 'La edad es obligatoria';
-                                }
-                                final age = int.tryParse(value!);
-                                if (age == null || age < 3 || age > 18) {
-                                  return 'Edad: 3-18 años';
-                                }
-                                return null;
-                              },
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            const SizedBox(height: 20),
                             Text(
                               'Grado Escolar',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -169,111 +156,161 @@ class ChildDataScreen extends HookWidget {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            TextFormField(
-                              controller: gradeController,
+                            DropdownButtonFormField<String>(
+                              value: selectedGrade.value,
                               decoration: InputDecoration(
-                                hintText: '3° Básico',
+                                hintText: 'Selecciona uno',
                                 prefixIcon: Icon(Icons.school, color: context.mediumText),
                               ),
-                              validator: (value) {
-                                if (value?.isEmpty ?? true) {
-                                  return 'El grado es obligatorio';
-                                }
-                                return null;
+                              items: grades.map((String grade) {
+                                return DropdownMenuItem<String>(
+                                  value: grade,
+                                  child: Text(grade),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                selectedGrade.value = newValue;
                               },
                             ),
+                          ] else ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Edad',
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          color: context.darkText,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      TextFormField(
+                                        controller: ageController,
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          hintText: '8',
+                                          prefixIcon: Icon(Icons.cake, color: context.mediumText),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Grado Escolar',
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                          color: context.darkText,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      DropdownButtonFormField<String>(
+                                        value: selectedGrade.value,
+                                        decoration: InputDecoration(
+                                          hintText: 'Selecciona uno',
+                                          prefixIcon: Icon(Icons.school, color: context.mediumText),
+                                        ),
+                                        items: grades.map((String grade) {
+                                          return DropdownMenuItem<String>(
+                                            value: grade,
+                                            child: Text(grade),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          selectedGrade.value = newValue;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
-                        ),
+                          const SizedBox(height: 20),
+
+                          Text(
+                            'Correo Electrónico',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: context.darkText,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: childEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              hintText: 'maria.gonzalez@email.com',
+                              prefixIcon: Icon(Icons.email, color: context.mediumText),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    if (isSmallScreen && onBack != null) ...[
+                      Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: onBack,
+                              child: Text('Volver'),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: handleNext,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: context.warmYellow,
+                              ),
+                              child: Text('Siguiente'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else ...[
+                      Row(
+                        children: [
+                          if (onBack != null) ...[
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: onBack,
+                                child: Text('Volver'),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                          ],
+                          Expanded(
+                            flex: onBack != null ? 2 : 1,
+                            child: ElevatedButton(
+                              onPressed: handleNext,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: context.warmYellow,
+                              ),
+                              child: Text('Siguiente'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Email del niño
-                  Text(
-                    'Correo Electrónico',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: context.darkText,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: childEmailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      hintText: 'maria.gonzalez@email.com',
-                      prefixIcon: Icon(Icons.email, color: context.mediumText),
-                    ),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'El correo es obligatorio';
-                      }
-                      final emailRegex = RegExp(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
-                      if (!emailRegex.hasMatch(value!)) {
-                        return 'Ingresa un correo válido';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 32),
-
-            // Botones de navegación
-            Row(
-              children: [
-                if (onBack != null) ...[
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: onBack,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: context.mediumText,
-                        side: BorderSide(color: context.lightGray),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        'Volver',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: context.mediumText,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                ],
-                Expanded(
-                  flex: onBack != null ? 2 : 1,
-                  child: ElevatedButton(
-                    onPressed: handleNext,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: context.warmYellow,
-                      foregroundColor: context.darkText,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                    ),
-                    child: Text(
-                      'Siguiente',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: context.darkText,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
