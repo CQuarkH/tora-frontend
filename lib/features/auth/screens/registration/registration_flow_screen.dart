@@ -66,15 +66,7 @@ class RegistrationFlowScreen extends HookWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              context.pureWhite,
-              context.lightGray.withOpacity(0.3),
-              context.softBlue.withOpacity(0.1),
-            ],
-          ),
+          color: const Color(0xFFFFFBEF), // Fondo crema cálido para todas las vistas
         ),
         child: SafeArea(
           child: Column(

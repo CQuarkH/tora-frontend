@@ -69,10 +69,12 @@ class ChildDataScreen extends HookWidget {
             
             Center(
               child: Text(
-                'Datos del Niño/a',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                'Cuéntanos sobre tu \nhijo o hija',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
                   color: context.darkText,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -80,11 +82,13 @@ class ChildDataScreen extends HookWidget {
             
             Center(
               child: Text(
-                'Información básica del menor',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                'Completa algunos datos para personalizar su experiencia',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
                   color: context.mediumText,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 32),

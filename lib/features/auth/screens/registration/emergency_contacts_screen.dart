@@ -107,9 +107,11 @@ class EmergencyContactsScreen extends HookWidget {
       onComplete({
         'emergencyContacts': emergencyContacts.value,
       });
-    }    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
+    }    return Container(
+      color: const Color(0xFFFFFBEF), // Fondo crema cálido
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Icono y descripción
@@ -387,6 +389,6 @@ class EmergencyContactsScreen extends HookWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

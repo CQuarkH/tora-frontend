@@ -44,10 +44,12 @@ class PasswordSetupScreen extends HookWidget {
       // }
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Form(
-        key: formKey,
+    return Container(
+      color: const Color(0xFFFFFBEF), // Fondo crema cálido
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -213,6 +215,6 @@ class PasswordSetupScreen extends HookWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
