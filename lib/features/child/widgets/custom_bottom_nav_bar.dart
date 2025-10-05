@@ -35,17 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Líneas decorativas superiores (rayitas)
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           // Botones de navegación con botón central grande
           Expanded(
             child: Padding(
@@ -61,6 +51,8 @@ class CustomBottomNavBar extends StatelessWidget {
                     index: 1,
                     pngPath: 'assets/images/icons/topic.png',
                   ),
+                  // Botón central especial
+                  _buildCentralButton(),
                   _buildNavItem(
                     index: 2,
                     pngPath: 'assets/images/icons/paw.png',
@@ -105,6 +97,21 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCentralButton() {
+    return GestureDetector(
+      onTap: () => (){
+        
+      },
+      child:  Image.asset(
+          'assets/images/icons/alert.png',
+          width: 56,
+          height: 56,
+          fit: BoxFit.contain,
+        ),
+      
     );
   }
 
