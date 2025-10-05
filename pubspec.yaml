@@ -47,6 +47,7 @@ dependencies:
   wakelock_plus: ^1.4.0
   flutter_local_notifications: ^19.4.2
   hexcolor: ^3.0.1
+  persistent_bottom_nav_bar: ^6.2.1
 
 dev_dependencies:
   flutter_test:
