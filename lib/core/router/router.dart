@@ -7,7 +7,6 @@ import 'package:tora_frontend/features/auth/screens/parent_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/register_user_steep_one_screen.dart';
 import 'package:tora_frontend/features/auth/screens/register_user_steep_two_screen.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
-import 'package:tora_frontend/features/child/widgets/a.dart';
 import 'package:tora_frontend/features/parent/screens/parent_main_screen.dart';
 
 // Enum para los tipos de usuario

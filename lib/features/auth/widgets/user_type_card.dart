@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tora_frontend/core/theme/tora_theme.dart';
 
 class UserTypeCard extends StatelessWidget {
   final String title;
@@ -23,6 +24,7 @@ class UserTypeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onTap: onTap,
@@ -30,19 +32,17 @@ class UserTypeCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.all(size.width < 350 ? 12 : 20),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.deepPurple[100] : Colors.white,
+          color: isSelected 
+              ? colorScheme.primaryContainer.withOpacity(0.3)
+              : colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.deepPurple : Colors.grey[300]!,
+            color: isSelected 
+                ? colorScheme.primary 
+                : colorScheme.outline.withOpacity(0.3),
             width: isSelected ? 2 : 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: ToraTheme.cardShadow,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,14 +61,17 @@ class UserTypeCard extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.deepPurple[800] : Colors.black87,
+                    color: 
+                      context.darkText,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
               description,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
+                    color: isSelected 
+                        ? context.mediumText 
+                        : context.lightText,
                   ),
               textAlign: TextAlign.center,
             ),
