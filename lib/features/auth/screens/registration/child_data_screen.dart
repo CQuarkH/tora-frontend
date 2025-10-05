@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 
 class ChildDataScreen extends HookWidget {
@@ -49,23 +50,11 @@ class ChildDataScreen extends HookWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            Center(child: 
+            SvgPicture.asset('assets/images/characters/tora.svg', height: 200, width: 00,)),
             // Icono y descripción
-            Center(
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: context.softBlue.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.child_care,
-                  size: 50,
-                  color: context.darkText,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
+           
             
             Center(
               child: Text(

@@ -26,10 +26,7 @@ class RegistrationFlowScreen extends HookWidget {
 
     void nextStep(Map<String, dynamic> stepData) {
       // Guardar datos del paso actual
-      registrationData.value = {
-        ...registrationData.value,
-        ...stepData,
-      };
+      registrationData.value = {...registrationData.value, ...stepData};
 
       if (currentStep.value < 3) {
         currentStep.value++;
@@ -58,7 +55,7 @@ class RegistrationFlowScreen extends HookWidget {
           backgroundColor: Colors.green,
         ),
       );
-      
+
       // Navegar a la raíz
       context.go('/');
     }
@@ -66,47 +63,43 @@ class RegistrationFlowScreen extends HookWidget {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFBEF), // Fondo crema cálido para todas las vistas
+          color: const Color(
+            0xFFFFFBEF,
+          ), // Fondo crema cálido para todas las vistas
         ),
         child: SafeArea(
           child: Column(
             children: [
-              // Header con indicador de progreso
               Container(
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    // Botón de regreso al login del padre
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: () => context.go('/parent-login'),
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: context.darkText,
+                    // Header con botón de volver y título en la misma línea
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () => context.go('/parent-login'),
+                          icon: Icon(Icons.arrow_back, color: context.darkText),
+                          tooltip: 'Volver al Login del Padre',
                         ),
-                        tooltip: 'Volver al Login del Padre',
-                      ),
+                        Expanded(
+                          child: Text(
+                            'Registro Tora',
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  color: context.darkText,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        // Espacio invisible para balancear el diseño
+                        const SizedBox(width: 48),
+                      ],
                     ),
                     const SizedBox(height: 16),
-                    
-                    // Título
-                    Text(
-                      'Registro Tora',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: context.darkText,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      steps[currentStep.value],
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: context.mediumText,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    
+                  
+
                     // Indicador de progreso
                     SmoothPageIndicator(
                       controller: pageController,
@@ -120,7 +113,7 @@ class RegistrationFlowScreen extends HookWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Progreso en texto
                     Text(
                       'Paso ${currentStep.value + 1} de 4',
@@ -131,7 +124,7 @@ class RegistrationFlowScreen extends HookWidget {
                   ],
                 ),
               ),
-              
+
               // Contenido de los pasos
               Expanded(
                 child: PageView(
