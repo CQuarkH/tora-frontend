@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:tora_frontend/features/child/screens/calendar/child_calendar_screen.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
-import 'package:dotted_border/dotted_border.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({super.key});
