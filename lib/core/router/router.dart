@@ -99,7 +99,7 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/child',
           name: 'child-home',
-          builder: (context, state) => const MainScreen(),
+          builder: (context, state) => const ChildMainScreen(),
           routes: [
             GoRoute(
               path: '/calendar',
