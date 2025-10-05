@@ -111,6 +111,6 @@ class ParentLoginScreen extends HookWidget {
 
   void _handleCreateAccount(BuildContext context) {
     // Navegar al proceso de registro
-    context.go('/register-step-one');
+    context.go('/register');
   }
 }

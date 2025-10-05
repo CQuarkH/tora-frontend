@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tora_frontend/features/auth/screens/fork_users_screen.dart';
 import 'package:tora_frontend/features/auth/screens/child_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/parent_login_screen.dart';
-import 'package:tora_frontend/features/auth/screens/register_user_steep_one_screen.dart';
-import 'package:tora_frontend/features/auth/screens/register_user_steep_two_screen.dart';
+import 'package:tora_frontend/features/auth/screens/registration/registration_flow_screen.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
 import 'package:tora_frontend/features/parent/screens/parent_main_screen.dart';
 
@@ -39,7 +38,7 @@ final GoRouter appRouter = GoRouter(
     final String location = state.uri.path;
 
     // Rutas de autenticación que no requieren redirección
-    const authRoutes = ['/', '/child-login', '/parent-login', '/register-step-one', '/register-step-two'];
+    const authRoutes = ['/', '/child-login', '/parent-login', '/register'];
     
     // Si no está logueado y trata de acceder a rutas protegidas (pero no a rutas de auth)
     if (!isLoggedIn && !authRoutes.contains(location) && (location.startsWith('/child') || location.startsWith('/parent'))) {
@@ -78,15 +77,9 @@ final GoRouter appRouter = GoRouter(
     ),
     
     GoRoute(
-      path: '/register-step-one',
-      name: 'register-step-one',
-      builder: (context, state) => const RegisterUserStepOneScreen(),
-    ),
-    
-    GoRoute(
-      path: '/register-step-two',
-      name: 'register-step-two',
-      builder: (context, state) => const RegisterUserStepTwoScreen(),
+      path: '/register',
+      name: 'register',
+      builder: (context, state) => const RegistrationFlowScreen(),
     ),
 
     // ===== RUTAS DEL NIÑO =====

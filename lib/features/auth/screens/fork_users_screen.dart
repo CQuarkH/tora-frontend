@@ -104,7 +104,7 @@ class ForkUsersScreen extends HookWidget {
                                   const SizedBox(width: 20),
                                   Expanded(
                                     child: UserTypeCard(
-                                      title: 'Padre/Madre',
+                                      title: 'Tutor/a',
                                       description: 'Gestiona y supervisa las actividades de tu hijo/a de manera fácil y efectiva',
                                       icon: Icons.family_restroom,
                                       iconColor: context.darkText,
