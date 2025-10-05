@@ -46,7 +46,7 @@ class CustomBottomNavBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // Botones de navegación
+          // Botones de navegación con botón central grande
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -59,7 +59,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   ),
                   _buildNavItem(
                     index: 1,
-                    pngPath: 'assets/images/icons/lightbulb.png',
+                    pngPath: 'assets/images/icons/topic.png',
                   ),
                   _buildNavItem(
                     index: 2,
@@ -67,7 +67,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   ),
                   _buildNavItem(
                     index: 3,
-                    pngPath: 'assets/images/icons/communication.png',
+                    pngPath: 'assets/images/icons/speaker.png',
                   ),
                 ],
               ),
@@ -95,13 +95,13 @@ class CustomBottomNavBar extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
         child: Center(
           child: _buildIconWidget(
             iconData: iconData,
             pngPath: pngPath,
-            size: isSelected ? 28 : 24,
+            size: isSelected ? 36 : 32,
           ),
         ),
       ),
@@ -126,6 +126,7 @@ class CustomBottomNavBar extends StatelessWidget {
       return Icon(
         iconData,
         size: size,
+        color: Colors.grey[700],
       );
     }
   }
