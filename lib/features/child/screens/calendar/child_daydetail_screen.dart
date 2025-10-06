@@ -167,6 +167,10 @@ class ChildDayDetailScreen extends HookWidget {
 
               // Información del período
               TimersSection(),
+
+              const SizedBox(
+                height: 80.0,
+              ), // Espacio para evitar solapamiento con el FAB
             ],
           ),
         ),
