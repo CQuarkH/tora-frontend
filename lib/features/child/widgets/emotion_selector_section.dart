@@ -70,7 +70,7 @@ class EmotionSelectorSection extends StatelessWidget {
             crossAxisCount: 3,
             mainAxisSpacing: 12.0,
             crossAxisSpacing: 12.0,
-            childAspectRatio: 1.2,
+            childAspectRatio: 0.9, // Reducido para dar más espacio vertical
             children: Emotion.values.map((emotion) {
               final isSelected = currentEmotion?.emotion == emotion;
               return EmotionOption(

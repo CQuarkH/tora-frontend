@@ -18,7 +18,7 @@ class EmotionOption extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0), // Reducido el padding
         decoration: BoxDecoration(
           color: emotion.backgroundColor,
           border: isSelected
@@ -28,17 +28,22 @@ class EmotionOption extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min, // Añadido para mejor control del espacio
           children: [
-            Text(emotion.emoji, style: const TextStyle(fontSize: 24.0)),
+            Text(emotion.emoji, style: const TextStyle(fontSize: 22.0)), // Reducido ligeramente
             const SizedBox(height: 4.0),
-            Text(
-              emotion.displayName,
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: Colors.black87,
+            Flexible( // Añadido Flexible para manejar overflow
+              child: Text(
+                emotion.displayName,
+                style: TextStyle(
+                  fontSize: 10.0, // Reducido el tamaño de fuente
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2, // Permitir hasta 2 líneas
+                overflow: TextOverflow.ellipsis, // Truncar si es necesario
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),

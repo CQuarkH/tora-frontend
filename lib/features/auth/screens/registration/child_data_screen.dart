@@ -70,7 +70,7 @@ class ChildDataScreen extends HookWidget {
                   children: [
                     Center(
                       child: SvgPicture.asset(
-                        'assets/images/characters/tora.svg',
+                        'assets/images/characters/tora_mano_arriba_saludo.svg',
                         height: isTablet ? 250 : 180,
                         width: isTablet ? 250 : 180,
                       ),
