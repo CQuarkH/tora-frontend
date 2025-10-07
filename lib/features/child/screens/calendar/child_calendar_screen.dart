@@ -113,7 +113,7 @@ class ChildCalendarScreen extends HookWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   margin: const EdgeInsets.symmetric(horizontal: 1),
                   decoration: BoxDecoration(
-                    color: ToraTheme.lightGray.withOpacity(0.5),
+                    color: Colors.white,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8),
                       topRight: Radius.circular(8),
@@ -152,7 +152,7 @@ class ChildCalendarScreen extends HookWidget {
                   elevation = 4;
                 } else if (isPast) {
                   // Días pasados - más oscuros y desaturados
-                  backgroundColor = ToraTheme.lightGray.withOpacity(0.7);
+                  backgroundColor = ToraTheme.lightText.withOpacity(0.3);
                   textColor = ToraTheme.lightText;
                 } else if (!isInMonth) {
                   // Días fuera del mes actual

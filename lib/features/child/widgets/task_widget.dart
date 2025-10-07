@@ -66,9 +66,6 @@ class TaskWidget extends StatelessWidget {
                           fontSize: 16.0,
                           fontWeight: FontWeight.w600,
                           color: isDone ? Colors.green[700] : Colors.black87,
-                          decoration: isDone
-                              ? TextDecoration.lineThrough
-                              : null,
                         ),
                       ),
                       if (task.description != null &&
@@ -81,9 +78,6 @@ class TaskWidget extends StatelessWidget {
                             color: isDone
                                 ? Colors.green[600]
                                 : Colors.grey[600],
-                            decoration: isDone
-                                ? TextDecoration.lineThrough
-                                : null,
                           ),
                         ),
                       ],

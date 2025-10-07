@@ -1,4 +1,6 @@
 // services/timer_service.dart
+// ignore_for_file: unused_element
+
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -195,7 +197,7 @@ class TimerService extends ChangeNotifier {
     }
 
     // Reproducir sonido y vibración
-    _playCompletionAlert(timer);
+    //_playCompletionAlert(timer); // comentado por solicitud del cliente
 
     // Mostrar notificación
     _showCompletionNotification(timer);
