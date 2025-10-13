@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:tora_frontend/core/theme/tora_theme.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
 import 'package:tora_frontend/features/parent/screens/parent_dashboard_screen.dart';
+import 'package:tora_frontend/features/parent/screens/parent_notifications_screen.dart';
 
 class ParentMainScreen extends HookWidget {
   const ParentMainScreen({super.key});
@@ -49,6 +51,19 @@ class ParentMainScreen extends HookWidget {
           LogoutHelper.logoutAppBarAction(
             context,
             customMessage: '¿Está seguro de que desea cerrar sesión?',
+          ),
+          IconButton(
+            icon: const Icon(Icons.notifications, color: ToraTheme.warmYellow),
+            onPressed: () {
+              // Navegar a la pantalla de notificaciones
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const ParentNotificationsScreen(childId: 'child_001'),
+                ),
+              );
+            },
           ),
         ],
       ),
