@@ -32,4 +32,30 @@ class Child extends User {
       parentId: 'parent_456',
     );
   }
+
+  factory Child.fromJson(Map<String, dynamic> json) {
+    return Child(
+      id: json['id'],
+      email: json['email'],
+      passwordHash: json['passwordHash'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      name: json['name'],
+      age: json['age'],
+      grade: json['grade'],
+      parentId: json['parentId'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'email': email,
+    'passwordHash': passwordHash,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+    'name': name,
+    'age': age,
+    'grade': grade,
+    'parentId': parentId,
+  };
 }

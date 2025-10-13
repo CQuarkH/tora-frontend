@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:flutter/material.dart';
 
 enum Emotion { HAPPY, SAD, SO_SO, ANGRY, CONTENT }
@@ -14,6 +16,24 @@ class EmotionRecord {
     required this.emotion,
     required this.createdAt,
   });
+
+  factory EmotionRecord.fromJson(Map<String, dynamic> json) {
+    return EmotionRecord(
+      id: json['id'],
+      blockId: json['blockId'],
+      emotion: Emotion.values.firstWhere(
+        (e) => e.toString() == 'Emotion.' + json['emotion'],
+      ),
+      createdAt: DateTime.parse(json['createdAt']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'blockId': blockId,
+    'emotion': emotion.toString().split('.').last,
+    'createdAt': createdAt.toIso8601String(),
+  };
 }
 
 extension EmotionExtension on Emotion {

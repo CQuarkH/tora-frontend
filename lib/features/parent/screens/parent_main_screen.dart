@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
+import 'package:tora_frontend/features/parent/screens/parent_dashboard_screen.dart';
 
 class ParentMainScreen extends HookWidget {
   const ParentMainScreen({super.key});
@@ -10,10 +11,13 @@ class ParentMainScreen extends HookWidget {
     final selectedIndex = useState(0);
 
     final Map<String, Widget> pages = {
-      'Dashboard': const Center(child: Text('Dashboard - En desarrollo')),
-      'Progreso del Niño': const Center(child: Text('Progreso del Niño - En desarrollo')),
-      'Contactos de Emergencia': const Center(child: Text('Contactos de Emergencia - En desarrollo')),
-      'Configuración': const Center(child: Text('Configuración - En desarrollo')),
+      'Dashboard - María': const ParentDashboardScreen(childId: 'child_001'),
+      'Contactos de Emergencia': const Center(
+        child: Text('Contactos de Emergencia - En desarrollo'),
+      ),
+      'Configuración': const Center(
+        child: Text('Configuración - En desarrollo'),
+      ),
     };
 
     return Scaffold(
@@ -21,6 +25,13 @@ class ParentMainScreen extends HookWidget {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Image.asset(
+            'assets/images/icons/tora.png',
+            fit: BoxFit.contain,
+          ),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,8 +47,8 @@ class ParentMainScreen extends HookWidget {
         ),
         actions: [
           LogoutHelper.logoutAppBarAction(
-            context, 
-            customMessage: '¿Está seguro de que desea cerrar sesión?'
+            context,
+            customMessage: '¿Está seguro de que desea cerrar sesión?',
           ),
         ],
       ),
@@ -53,11 +64,7 @@ class ParentMainScreen extends HookWidget {
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up),
-            label: 'Progreso',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contacts), 
+            icon: Icon(Icons.contacts),
             label: 'Contactos',
           ),
           BottomNavigationBarItem(
