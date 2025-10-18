@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:tora_frontend/features/child/models/child.dart';
 import 'package:tora_frontend/features/child/screens/calendar/child_calendar_screen.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
+import 'package:tora_frontend/features/child/screens/recommendation-child/recommendation_child_screen.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({super.key});
@@ -24,6 +26,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PersistentTabView(
+        
         context,
         controller: _controller,
         screens: _buildScreens(),
@@ -55,7 +58,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
   List<Widget> _buildScreens() {
     return [
       _buildScreenWithAppBar("Calendario", const ChildCalendarScreen()),
-      _buildScreenWithAppBar("Recomendaciones", const Placeholder()),
+      _buildScreenWithAppBar("Recomendaciones", const ChildRecommendationScreen()),
       _buildScreenWithAppBar("Alertas", const Placeholder()),
       _buildScreenWithAppBar("Comunicación", const Placeholder()),
       _buildScreenWithAppBar("Temas", const Placeholder()),

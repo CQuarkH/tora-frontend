@@ -6,6 +6,7 @@ import 'package:tora_frontend/features/auth/screens/child_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/parent_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/registration/registration_flow_screen.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
+import 'package:tora_frontend/features/child/screens/recommendation-child/recommendation_child_screen.dart';
 import 'package:tora_frontend/features/parent/screens/parent_main_screen.dart';
 
 // Enum para los tipos de usuario
@@ -101,9 +102,7 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/recommendations',
               name: 'child-recommendations',
-              builder: (context, state) => const Scaffold(
-                body: Center(child: Text('Recomendaciones - En desarrollo')),
-              ),
+              builder: (context, state) => const ChildRecommendationScreen(),
             ),
             GoRoute(
               path: '/pet',
