@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/communication_header.dart';
 import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/communication_option_card.dart';
-import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/communication_playback_bar.dart';
 
 class ChildCommunicationNonVerbaleScreen extends HookWidget {
   const ChildCommunicationNonVerbaleScreen({super.key});
@@ -48,7 +47,7 @@ class ChildCommunicationNonVerbaleScreen extends HookWidget {
       },
     ];
 
-        final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     // 🔹 Calcular columnas dinámicamente
@@ -59,50 +58,41 @@ class ChildCommunicationNonVerbaleScreen extends HookWidget {
     // 🔹 Ajustar relación ancho/alto de los cuadros
     final aspectRatio = screenHeight < 700 ? 0.95 : 1.1;
 
-
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Column(
           children: [
+            CommunicationHeader(),
 
-CommunicationHeader(),
-
-
-           Expanded(
-                child: GridView.builder(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.06,
-                    vertical: screenHeight * 0.02,
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: aspectRatio,
-                  ),
-                  itemCount: items.length,
-                  itemBuilder: (context, i) {
-                    final item = items[i];
-                    return CommunicationOptionCard(
-                      emoji: item['emoji'] as String,
-                      text: item['text'] as String,
-                      color: item['color'] as Color,
-                      isSelected: selectedPhrase.value == item['text'],
-                      onTap: () => selectedPhrase.value = item['text'] as String,
-                    );
-                  },
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.06,
+                  vertical: screenHeight * 0.02,
                 ),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: aspectRatio,
+                ),
+                itemCount: items.length,
+                itemBuilder: (context, i) {
+                  final item = items[i];
+                  return CommunicationOptionCard(
+                    emoji: item['emoji'] as String,
+                    text: item['text'] as String,
+                    color: item['color'] as Color,
+                    isSelected: selectedPhrase.value == item['text'],
+                    onTap: () => selectedPhrase.value = item['text'] as String,
+                  );
+                },
               ),
-
-            // 🔹 Barra inferior con frase seleccionada
-            CommunicationPlaybackBar(phrase: selectedPhrase.value),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-
