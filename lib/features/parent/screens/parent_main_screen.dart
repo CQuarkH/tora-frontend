@@ -4,6 +4,7 @@ import 'package:tora_frontend/core/theme/tora_theme.dart';
 import 'package:tora_frontend/core/widgets/logout_helper.dart';
 import 'package:tora_frontend/features/parent/screens/parent_dashboard_screen.dart';
 import 'package:tora_frontend/features/parent/screens/parent_notifications_screen.dart';
+import 'package:tora_frontend/features/parent/screens/parent_tips_screen.dart';
 
 class ParentMainScreen extends HookWidget {
   const ParentMainScreen({super.key});
@@ -14,12 +15,7 @@ class ParentMainScreen extends HookWidget {
 
     final Map<String, Widget> pages = {
       'Dashboard - María': const ParentDashboardScreen(childId: 'child_001'),
-      'Contactos de Emergencia': const Center(
-        child: Text('Contactos de Emergencia - En desarrollo'),
-      ),
-      'Configuración': const Center(
-        child: Text('Configuración - En desarrollo'),
-      ),
+      'Consejos para ti': const ParentTipsScreen(),
     };
 
     return Scaffold(
@@ -78,14 +74,8 @@ class ParentMainScreen extends HookWidget {
             icon: Icon(Icons.dashboard),
             label: 'Dashboard',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contacts),
-            label: 'Contactos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configuración',
-          ),
+
+          BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: 'Tips'),
         ],
         currentIndex: selectedIndex.value,
         onTap: (index) {
