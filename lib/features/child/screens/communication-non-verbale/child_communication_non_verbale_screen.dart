@@ -1,140 +1,193 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/communication_header.dart';
+import 'package:http/http.dart' as http;
+import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/category_section.dart';
+import 'dart:convert';
+
 import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/communication_option_card.dart';
+import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/focused_card_view.dart';
 
 class ChildCommunicationNonVerbaleScreen extends HookWidget {
   const ChildCommunicationNonVerbaleScreen({super.key});
 
+  Future<List<Map<String, dynamic>>> fetchCategory(String category) async {
+    final response = await http.get(
+      Uri.parse('http://localhost:3000/pictograms/$category'),
+    );
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      final filtered =
+          data.where((element) => element['imageUrl'] != null).toList();
+      return filtered.map((e) => e as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Error al cargar pictogramas de $category');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedPhrase = useState<String?>(null);
+    final activeIndex = useState<int?>(null);
+    final scrollController = useScrollController();
 
-    final items = [
-      {'emoji': '😊', 'text': 'Estoy bien', 'color': const Color(0xFFFFE8D6)},
-      {'emoji': '😢', 'text': 'Estoy triste', 'color': const Color(0xFFFFE8D6)},
-      {'emoji': '😡', 'text': 'Estoy enojado', 'color': const Color(0xFFFFE8D6)},
-      {'emoji': '🤢', 'text': 'Me siento mal', 'color': const Color(0xFFFFE8D6)},
-      {'emoji': '🍎', 'text': 'Tengo hambre', 'color': const Color(0xFFD6EAF8)},
-      {'emoji': '💧', 'text': 'Tengo sed', 'color': const Color(0xFFD6EAF8)},
-      {'emoji': '🚽', 'text': 'Necesito ir al baño', 'color': const Color(0xFFD6EAF8)},
-      {'emoji': '🏠', 'text': 'Quiero ir a casa', 'color': const Color(0xFFD6EAF8)},
-      {'emoji': '🗣️', 'text': 'Quiero hablar', 'color': const Color(0xFFE8DAEF)},
+    final categories = [
+      {
+        'name': '😊 Emociones',
+        'key': 'emociones',
+        'color': const Color(0xFFFFE8D6)
+      },
+      {
+        'name': '🤸 Acciones',
+        'key': 'acciones',
+        'color': const Color(0xFFD6EAF8)
+      },
+      {
+        'name': '💬 Sociales',
+        'key': 'sociales',
+        'color': const Color(0xFFE8DAEF)
+      },
+      {
+        'name': '🌿 Regulación',
+        'key': 'regulacion',
+        'color': const Color(0xFFD5F5E3)
+      },
     ];
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final sectionKeys = {
+      for (final cat in categories) cat['key']: GlobalKey()
+    };
 
-    int crossAxisCount = 3;
-    if (screenWidth < 380) crossAxisCount = 2;
-    if (screenWidth > 700) crossAxisCount = 4;
-
-    final aspectRatio = screenHeight < 700 ? 0.95 : 1.1;
+    // 🔹 Cargar solo una vez
+    final futureData = useMemoized(() => _loadAll(categories));
+    final snapshot = useFuture(futureData);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // 🔹 Vista principal
-            Column(
-              children: [
-                const CommunicationHeader(),
-                Expanded(
-                  child: GridView.builder(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.06,
-                      vertical: screenHeight * 0.02,
-                    ),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: aspectRatio,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, i) {
-                      final item = items[i];
-                      final text = item['text'] as String;
+        
 
-                      return Hero(
-                        tag: text,
-                        child: CommunicationOptionCard(
-                          emoji: item['emoji'] as String,
-                          text: text,
-                          color: item['color'] as Color,
-                          isSelected: selectedPhrase.value == text,
-                          onTap: () {
-                            selectedPhrase.value = text;
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                opaque: false,
-                                barrierColor: Colors.black.withOpacity(0.6),
-                                transitionDuration: const Duration(milliseconds: 400),
-                                pageBuilder: (_, __, ___) => _FocusedCardView(
-                                  emoji: item['emoji'] as String,
-                                  text: text,
-                                  color: item['color'] as Color,
-                                  onClose: () => Navigator.of(context).pop(),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
+            // 🔹 Barra superior (máximo 3 botones por fila)
+            Container(
+  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      final maxWidth = constraints.maxWidth;
+      final double itemWidth = (maxWidth - 32) / 3; // máximo 3 por fila con margen
+
+      return Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.start,
+        children: [
+          for (int i = 0; i < categories.length; i++)
+            GestureDetector(
+              onTap: () {
+                activeIndex.value = i;
+                final ctx =
+                    sectionKeys[categories[i]['key']]?.currentContext;
+                if (ctx != null) {
+                  Scrollable.ensureVisible(
+                    ctx,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOutCubic,
+                  );
+                }
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: itemWidth, // 🔹 ancho adaptativo
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 12),
+                decoration: BoxDecoration(
+                  color: activeIndex.value == i
+                      ? (categories[i]['color'] as Color).withOpacity(0.85)
+                      : (categories[i]['color'] as Color),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: activeIndex.value == i
+                        ? Colors.orangeAccent
+                        : (categories[i]['color'] as Color),
+                    width: 1.5,
+                  ),
+                  boxShadow: activeIndex.value == i
+                      ? [
+                          BoxShadow(
+                            color: Colors.orangeAccent.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Center(
+                  child: Text(
+                    categories[i]['name'] as String,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
-              ],
+              ),
+            ),
+        ],
+      );
+    },
+  ),
+)
+,
+
+            // 🔹 Contenido
+            Expanded(
+              child: snapshot.connectionState == ConnectionState.waiting
+                  ? const Center(child: CircularProgressIndicator())
+                  : snapshot.hasError
+                      ? Center(child: Text('Error: ${snapshot.error}'))
+                      : NotificationListener<OverscrollIndicatorNotification>(
+                          onNotification: (notification) {
+                            notification.disallowIndicator();
+                            return true;
+                          },
+                          child: SingleChildScrollView(
+                            key: const PageStorageKey('communication_scroll'),
+                            controller: scrollController,
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (final cat in categories)
+                                  if (snapshot.data!.containsKey(cat['key']))
+                                    CategorySection(
+                                      key: sectionKeys[cat['key']],
+                                      title: cat['name'] as String,
+                                      color: cat['color'] as Color,
+                                      items: snapshot.data![cat['key']]!,
+                                      selectedPhrase: selectedPhrase,
+                                    ),
+                              ],
+                            ),
+                          ),
+                        ),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-/// 🔹 Pantalla que muestra la tarjeta centrada y agrandada
-class _FocusedCardView extends StatelessWidget {
-  final String emoji;
-  final String text;
-  final Color color;
-  final VoidCallback onClose;
-
-  const _FocusedCardView({
-    required this.emoji,
-    required this.text,
-    required this.color,
-    required this.onClose,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onClose,
-      child: Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.6),
-        body: Center(
-          child: Hero(
-            tag: text,
-            child: Material(
-              color: Colors.transparent,
-              child: AnimatedScale(
-                scale: 1.5,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeOutBack,
-                child: CommunicationOptionCard(
-                  emoji: emoji,
-                  text: text,
-                  color: color,
-                  isSelected: true,
-                  onTap: onClose,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  Future<Map<String, List<Map<String, dynamic>>>> _loadAll(
+      List<Map<String, dynamic>> categories) async {
+    final results = await Future.wait(categories.map((cat) async {
+      final items = await fetchCategory(cat['key'] as String);
+      return MapEntry(cat['key'] as String, items);
+    }));
+    return Map.fromEntries(results);
   }
 }
+
