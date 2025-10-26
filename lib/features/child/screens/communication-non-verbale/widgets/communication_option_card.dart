@@ -78,8 +78,8 @@ class CommunicationOptionCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: cardWidth * 0.12, // Escala automática
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black54,
                         height: 1.1,
                       ),
                     ),

@@ -32,6 +32,7 @@ class FocusedCardView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 350),
+                  
                   curve: Curves.easeOutBack,
                   width: cardSize,
                   height: cardSize,
@@ -57,14 +58,15 @@ class FocusedCardView extends StatelessWidget {
                           )
                         else
                           const Text('❓', style: TextStyle(fontSize: 80)),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 5),
                         Text(
                           text,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: cardSize * 0.08,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[800],
+                            fontSize: cardSize * 0.15,
+                            fontWeight: FontWeight.w800,
+                            color:  Theme.of(context).colorScheme.primary,
+                           
                           ),
                         ),
                       ],
