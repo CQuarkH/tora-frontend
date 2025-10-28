@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tora_frontend/core/router/router.dart';
+import 'package:tora_frontend/features/auth/services/auth_service.dart';
 
 class LogoutHelper {
-  static void showLogoutDialog(BuildContext context, {String? customMessage}) {
+  static void showLogoutDialog(
+    BuildContext context, {
+    String? customMessage,
+  }) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('¿Cerrar sesión?'),
-          content: Text(customMessage ?? '¿Estás seguro de que quieres cerrar sesión?'),
+          content: Text(
+            customMessage ?? '¿Estás seguro de que quieres cerrar sesión?',
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -19,13 +24,16 @@ class LogoutHelper {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                _performLogout(context);
+                await _performLogout(context);
               },
               child: const Text(
-                'Cerrar sesión', 
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                'Cerrar sesión',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -34,25 +42,19 @@ class LogoutHelper {
     );
   }
 
-  static void _performLogout(BuildContext context) {
-    // Cerrar sesión
-    UserSession.logout();
-    
-    // Mostrar mensaje de confirmación
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('¡Sesión cerrada exitosamente!'),
-        backgroundColor: Colors.blue,
-        duration: Duration(seconds: 2),
-      ),
-    );
-    
-    // Navegar a la pantalla de selección de usuario
-    context.go('/');
+  static Future<void> _performLogout(BuildContext context) async {
+    final authService = AuthService();
+    await authService.logout();
+    if (context.mounted) {
+      context.go('/'); // Navegar a la pantalla de inicio de sesión
+    }
   }
 
   /// Widget para botón de logout en AppBar
-  static Widget logoutAppBarAction(BuildContext context, {String? customMessage}) {
+  static Widget logoutAppBarAction(
+    BuildContext context, {
+    String? customMessage,
+  }) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
       onSelected: (value) {
@@ -76,7 +78,11 @@ class LogoutHelper {
   }
 
   /// Widget para botón directo de logout
-  static Widget logoutButton(BuildContext context, {String? customMessage, String? buttonText}) {
+  static Widget logoutButton(
+    BuildContext context, {
+    String? customMessage,
+    String? buttonText,
+  }) {
     return ElevatedButton.icon(
       onPressed: () => showLogoutDialog(context, customMessage: customMessage),
       icon: const Icon(Icons.logout),
@@ -90,7 +96,10 @@ class LogoutHelper {
   }
 
   /// Widget para opción en drawer/menú lateral
-  static Widget logoutDrawerTile(BuildContext context, {String? customMessage}) {
+  static Widget logoutDrawerTile(
+    BuildContext context, {
+    String? customMessage,
+  }) {
     return ListTile(
       leading: const Icon(Icons.logout, color: Colors.red),
       title: const Text('Cerrar sesión', style: TextStyle(color: Colors.red)),

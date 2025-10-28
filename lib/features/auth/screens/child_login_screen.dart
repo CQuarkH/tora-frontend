@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tora_frontend/features/auth/models/user.dart';
+import 'package:tora_frontend/features/auth/services/auth_service.dart';
 import 'package:tora_frontend/features/auth/widgets/login_card.dart';
-import 'package:tora_frontend/core/router/router.dart';
 
 class ChildLoginScreen extends HookWidget {
   const ChildLoginScreen({super.key});
@@ -12,6 +15,28 @@ class ChildLoginScreen extends HookWidget {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final obscureText = useState(true);
+    final _authService = useMemoized(() => AuthService());
+
+    Future<void> _handleLogin() async {
+      try {
+        final loginResponse = await _authService.login(
+          email: emailController.text.trim(),
+          password: passwordController.text,
+        );
+
+        // Verificar que sea un niño
+        if (loginResponse.user.role != UserRole.CHILD) {
+          await _authService.logout();
+          return;
+        }
+
+        context.go('/child');
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error de inicio de sesión: $e')),
+        );
+      }
+    }
 
     return Scaffold(
       body: Container(
@@ -19,11 +44,7 @@ class ChildLoginScreen extends HookWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue[100]!,
-              Colors.blue[50]!,
-              Colors.white,
-            ],
+            colors: [Colors.blue[100]!, Colors.blue[50]!, Colors.white],
           ),
         ),
         child: SafeArea(
@@ -32,17 +53,17 @@ class ChildLoginScreen extends HookWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
                 Container(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  color: Colors.blue[800],
-                  iconSize: 30,
-                  onPressed: () => context.go('/'),
-                )),
+                    icon: const Icon(Icons.arrow_back),
+                    color: Colors.blue[800],
+                    iconSize: 30,
+                    onPressed: () => context.go('/'),
+                  ),
+                ),
                 const SizedBox(height: 30),
-                
+
                 // Título específico para niños
                 Text(
                   '¡Pequeño explorador!',
@@ -55,19 +76,20 @@ class ChildLoginScreen extends HookWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Inicia sesión para continuar tu aventura',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.blue[600],
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: Colors.blue[600]),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: 30),
                 LoginCard(
                   emailController: emailController,
                   passwordController: passwordController,
                   obscureText: obscureText,
-                  onLogin: () => _handleChildLogin(context, emailController.text, passwordController.text),
-                  showCreateAccount: false, // No mostrar opción de registro para niños
+                  onLogin: () => _handleLogin(),
+                  showCreateAccount:
+                      false, // No mostrar opción de registro para niños
                 ),
                 const SizedBox(height: 40),
               ],
@@ -76,33 +98,5 @@ class ChildLoginScreen extends HookWidget {
         ),
       ),
     );
-  }
-
-  void _handleChildLogin(BuildContext context, String email, String password) {
-    // Validación básica
-    // if (email.isEmpty || password.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Por favor, completa todos los campos'),
-    //       backgroundColor: Colors.orange,
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    // Lógica específica para login de niños
-    // Actualizar el estado del usuario
-    UserSession.setUserType(UserType.child);
-    
-    // Mostrar mensaje de éxito
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('¡Bienvenido de vuelta, pequeño aventurero!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    // Navegar a la vista principal del niño
-    context.go('/child');
   }
 }
