@@ -8,8 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 import 'package:tora_frontend/features/auth/services/auth_service.dart';
-import 'package:tora_frontend/features/child/models/calendar.dart';
-import 'package:tora_frontend/features/child/models/child.dart';
 import 'package:tora_frontend/features/child/screens/calendar/child_daydetail_screen.dart';
 
 class ChildCalendarScreen extends HookWidget {
@@ -201,15 +199,7 @@ class ChildCalendarScreen extends HookWidget {
                               ? () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => ChildDayDetailScreen(
-                                        currentChild:
-                                            asyncSnapshot.data as Child,
-                                        todayCalendar:
-                                            Calendar.createSampleCalendar(
-                                              (asyncSnapshot.data as Child).id,
-                                              date: date,
-                                            ),
-                                      ),
+                                      builder: (_) => ChildDayDetailScreen(),
                                     ),
                                   );
                                 }
