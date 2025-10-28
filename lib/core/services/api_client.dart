@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:tora_frontend/features/auth/services/secure_storage_service.dart';
 
 class ApiClient {
-  static const String baseUrl = 'http://127.0.0.1:3000/';
+  static const String baseUrl = 'http://172.29.193.93:3000';
   final SecureStorageService _storageService = SecureStorageService();
 
   Future<Map<String, String>> _getHeaders() async {

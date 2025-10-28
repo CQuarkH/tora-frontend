@@ -1,4 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:tora_frontend/core/services/api_client.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 import 'package:tora_frontend/features/child/models/regulation_strategy.dart';
 import 'package:tora_frontend/features/child/widgets/emergency_alert_modal.dart';
@@ -6,6 +8,35 @@ import 'package:tora_frontend/features/child/widgets/feedback_modal.dart';
 import 'package:tora_frontend/features/child/widgets/strategy_modal.dart';
 
 class SelfRegulationService {
+  static final _apiClient = ApiClient();
+
+  static Future<void> activateButton({
+    String? level = 'HIGH',
+    String? emotion,
+    String? trigger,
+    String? strategyUsed,
+    bool assistanceRequested = false,
+    String? notes,
+  }) async {
+    try {
+      final response = await _apiClient.post('/self-regulation/activate', {
+        'level': level,
+        if (emotion != null) 'emotion': emotion,
+        if (trigger != null) 'trigger': trigger,
+        if (strategyUsed != null) 'strategyUsed': strategyUsed,
+        'assistanceRequested': assistanceRequested,
+        if (notes != null) 'notes': notes,
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+      } else {
+        throw Exception('Error al activar botón: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
+
   static void showRegulationFlow(BuildContext context) {
     _showStrategyModal(context, attemptNumber: 0);
   }
@@ -131,15 +162,20 @@ class SelfRegulationService {
     );
   }
 
-  static void _showEmergencyAlert(BuildContext context) {
+  static Future<void> _showEmergencyAlert(BuildContext context) async {
+    await activateButton(level: 'HIGH', assistanceRequested: true);
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
-      builder: (modalContext) =>
-          EmergencyAlertModal(onClose: () => Navigator.of(modalContext).pop()),
+      builder: (modalContext) {
+        return EmergencyAlertModal(
+          onClose: () => Navigator.of(modalContext).pop(),
+        );
+      },
     );
   }
 }
