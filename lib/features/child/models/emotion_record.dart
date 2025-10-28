@@ -19,7 +19,7 @@ class EmotionRecord {
 
   factory EmotionRecord.fromJson(Map<String, dynamic> json) {
     return EmotionRecord(
-      id: json['id'],
+      id: json['_id'],
       blockId: json['blockId'],
       emotion: Emotion.values.firstWhere(
         (e) => e.toString() == 'Emotion.' + json['emotion'],

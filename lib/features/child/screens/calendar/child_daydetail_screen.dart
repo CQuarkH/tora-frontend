@@ -1,29 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:tora_frontend/features/auth/services/auth_service.dart';
 import 'package:tora_frontend/features/child/models/calendar.dart';
-import 'package:tora_frontend/features/child/models/child.dart';
 import 'package:tora_frontend/features/child/models/emotion_record.dart';
 import 'package:tora_frontend/features/child/models/task.dart';
+import 'package:tora_frontend/features/child/services/calendar_service.dart';
 import 'package:tora_frontend/features/child/widgets/period_selector_section.dart';
 import 'package:tora_frontend/features/child/widgets/emotion_selector_section.dart';
 import 'package:tora_frontend/features/child/widgets/tasks_section.dart';
 import 'package:tora_frontend/features/child/widgets/timers_section.dart';
 
 class ChildDayDetailScreen extends HookWidget {
-  final Child currentChild;
-  final Calendar todayCalendar;
-
-  const ChildDayDetailScreen({
-    super.key,
-    required this.currentChild,
-    required this.todayCalendar,
-  });
+  const ChildDayDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Estados usando hooks
     final selectedPeriod = useState<Period>(Period.MORNING);
-    final currentCalendar = useState<Calendar>(todayCalendar);
+    final currentCalendar = useState<Calendar>(
+      Calendar(id: '', childId: '', date: DateTime.now(), blocks: []),
+    );
+
+    useEffect(() {
+      Future.microtask(() async {
+        final authService = AuthService();
+        final user = await authService.getCurrentUser();
+
+        final calendar = await CalendarService.getDailyCalendar(
+          childId: user!.id,
+          date: DateTime.now(),
+        );
+        currentCalendar.value = calendar;
+      });
+      return null;
+    }, []);
 
     // Obtener el bloque actual basado en el período seleccionado
     final currentBlock = useMemoized(() {
@@ -61,62 +70,80 @@ class ChildDayDetailScreen extends HookWidget {
     }
 
     // Función para toggle de tareas
-    void toggleTask(String taskId) {
-      final updatedTasks = currentBlock.tasks.map((task) {
-        if (task.id == taskId) {
-          final newStatus = task.status == TaskStatus.PENDING
-              ? TaskStatus.DONE
-              : TaskStatus.PENDING;
-          return task.copyWith(
-            status: newStatus,
-            startTime: newStatus == TaskStatus.DONE ? DateTime.now() : null,
-            endTime: newStatus == TaskStatus.DONE ? DateTime.now() : null,
-          );
-        }
-        return task;
-      }).toList();
+    Future<void> toggleTask(String taskId) async {
+      final task = currentBlock.tasks.firstWhere((t) => t.id == taskId);
+      final newStatus = task.status == TaskStatus.PENDING
+          ? TaskStatus.DONE
+          : TaskStatus.PENDING;
 
-      final updatedBlock = currentBlock.copyWith(tasks: updatedTasks);
-      updateCalendarWithBlock(updatedBlock);
+      try {
+        final updatedTask = await CalendarService.updateTask(
+          taskId: taskId,
+          updateData: {'status': newStatus.name},
+        );
+
+        final updatedTasks = currentBlock.tasks.map((t) {
+          return t.id == taskId ? updatedTask : t;
+        }).toList();
+
+        final updatedBlock = currentBlock.copyWith(tasks: updatedTasks);
+        updateCalendarWithBlock(updatedBlock);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al actualizar tarea: $e')),
+        );
+      }
     }
 
     // Función para agregar nueva tarea
-    void addTask(String title, String description) {
-      final newTask = Task(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        blockId: currentBlock.id,
-        title: title,
-        description: description,
-        status: TaskStatus.PENDING,
-        createdAt: DateTime.now(),
-      );
+    Future<void> addTask(String title, String description) async {
+      try {
+        final newTask = await CalendarService.addTaskToBlock(
+          blockId: currentBlock.id,
+          title: title,
+          description: description,
+        );
 
-      final updatedTasks = [...currentBlock.tasks, newTask];
-      final updatedBlock = currentBlock.copyWith(tasks: updatedTasks);
-      updateCalendarWithBlock(updatedBlock);
+        final updatedTasks = [...currentBlock.tasks, newTask];
+        final updatedBlock = currentBlock.copyWith(tasks: updatedTasks);
+        updateCalendarWithBlock(updatedBlock);
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al agregar tarea: $e')));
+      }
     }
 
-    // Función para eliminar tarea
-    void deleteTask(String taskId) {
-      final updatedTasks = currentBlock.tasks
-          .where((task) => task.id != taskId)
-          .toList();
-
-      final updatedBlock = currentBlock.copyWith(tasks: updatedTasks);
-      updateCalendarWithBlock(updatedBlock);
+    Future<void> deleteTask(String taskId) async {
+      try {
+        await CalendarService.deleteTask(taskId);
+        final updatedTasks = currentBlock.tasks
+            .where((task) => task.id != taskId)
+            .toList();
+        final updatedBlock = currentBlock.copyWith(tasks: updatedTasks);
+        updateCalendarWithBlock(updatedBlock);
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al eliminar tarea: $e')));
+      }
     }
 
     // Función para registrar emoción
-    void recordEmotion(Emotion emotion) {
-      final emotionRecord = EmotionRecord(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        blockId: currentBlock.id,
-        emotion: emotion,
-        createdAt: DateTime.now(),
-      );
+    Future<void> recordEmotion(Emotion emotion) async {
+      try {
+        final record = await CalendarService.recordEmotion(
+          blockId: currentBlock.id,
+          emotion: emotion,
+        );
 
-      final updatedBlock = currentBlock.copyWith(emotion: emotionRecord);
-      updateCalendarWithBlock(updatedBlock);
+        final updatedBlock = currentBlock.copyWith(emotion: record);
+        updateCalendarWithBlock(updatedBlock);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al registrar emoción: $e')),
+        );
+      }
     }
 
     return Scaffold(

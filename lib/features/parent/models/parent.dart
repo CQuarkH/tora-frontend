@@ -1,26 +1,24 @@
 import 'package:tora_frontend/features/auth/models/user.dart';
 import 'dart:convert';
 
-class Child extends User {
+class Parent extends User {
   final String name;
-  final int age;
-  final String grade;
-  final String parentId;
+  final String phone;
+  final List<String> children;
 
-  Child({
+  Parent({
     required super.id,
     required super.email,
     required super.passwordHash,
     required super.createdAt,
     required super.updatedAt,
     required this.name,
-    required this.age,
-    required this.grade,
-    required this.parentId,
-  }) : super(role: UserRole.CHILD);
+    required this.phone,
+    required this.children,
+  }) : super(role: UserRole.PARENT);
 
-  factory Child.fromJson(Map<String, dynamic> json) {
-    return Child(
+  factory Parent.fromJson(Map<String, dynamic> json) {
+    return Parent(
       id: json['id'],
       email: json['email'],
       passwordHash: json['passwordHash'] ?? '',
@@ -31,9 +29,10 @@ class Child extends User {
           ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
       name: json['name'],
-      age: json['age'],
-      grade: json['grade'],
-      parentId: json['parentId'],
+      phone: json['phone'],
+      children: json['children'] != null
+          ? List<String>.from(json['children'])
+          : [],
     );
   }
 
@@ -41,32 +40,17 @@ class Child extends User {
     'id': id,
     'email': email,
     'passwordHash': passwordHash,
-    'role': 'CHILD',
+    'role': 'PARENT',
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     'name': name,
-    'age': age,
-    'grade': grade,
-    'parentId': parentId,
+    'phone': phone,
+    'children': children,
   };
 
   String toJsonString() => json.encode(toJson());
 
-  factory Child.fromJsonString(String jsonString) {
-    return Child.fromJson(json.decode(jsonString));
-  }
-
-  static Child createSampleChild() {
-    return Child(
-      id: 'child1',
-      email: 'child1@example.com',
-      passwordHash: 'hashed_password',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      name: 'Child One',
-      age: 10,
-      grade: '5th',
-      parentId: 'parent1',
-    );
+  factory Parent.fromJsonString(String jsonString) {
+    return Parent.fromJson(json.decode(jsonString));
   }
 }

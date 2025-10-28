@@ -42,4 +42,21 @@ class Task {
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  factory Task.fromJson(Map<String, dynamic> json) {
+    return Task(
+      id: json['_id'],
+      blockId: json['blockId'],
+      title: json['title'],
+      description: json['description'],
+      status: TaskStatus.values.firstWhere(
+        (e) => e.toString() == 'TaskStatus.${json['status']}',
+      ),
+      startTime: json['startTime'] != null
+          ? DateTime.parse(json['startTime'])
+          : null,
+      endTime: json['endTime'] != null ? DateTime.parse(json['endTime']) : null,
+      createdAt: DateTime.parse(json['createdAt']),
+    );
+  }
 }

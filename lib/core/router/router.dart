@@ -1,10 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tora_frontend/features/auth/models/user.dart';
 import 'package:tora_frontend/features/auth/screens/fork_users_screen.dart';
 import 'package:tora_frontend/features/auth/screens/child_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/parent_login_screen.dart';
 import 'package:tora_frontend/features/auth/screens/registration/registration_flow_screen.dart';
+import 'package:tora_frontend/features/auth/services/auth_service.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
 import 'package:tora_frontend/features/child/screens/recommendation-child/recommendation_child_screen.dart';
 import 'package:tora_frontend/features/parent/screens/parent_main_screen.dart';
@@ -34,28 +35,30 @@ class UserSession {
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   debugLogDiagnostics: true,
-  redirect: (BuildContext context, GoRouterState state) {
-    final bool isLoggedIn = UserSession.isLoggedIn;
-    final String location = state.uri.path;
+  redirect: (BuildContext context, GoRouterState state) async {
+    final authService = AuthService();
+    final isLoggedIn = await authService.isAuthenticated();
+    final location = state.uri.path;
 
-    // Rutas de autenticación que no requieren redirección
+    // Rutas de autenticación
     const authRoutes = ['/', '/child-login', '/parent-login', '/register'];
-    
-    // Si no está logueado y trata de acceder a rutas protegidas (pero no a rutas de auth)
-    if (!isLoggedIn && !authRoutes.contains(location) && (location.startsWith('/child') || location.startsWith('/parent'))) {
+
+    // Si no está logueado y trata de acceder a rutas protegidas
+    if (!isLoggedIn && !authRoutes.contains(location)) {
       return '/';
     }
 
-    // Si está logueado y trata de acceder a la pantalla inicial, redirigir según tipo de usuario
-    if (isLoggedIn && location == '/') {
-      if (UserSession.currentUserType == UserType.child) {
+    // Si está logueado y trata de acceder a auth, redirigir según rol
+    if (isLoggedIn && authRoutes.contains(location)) {
+      final userRole = await authService.getCurrentUserRole();
+      if (userRole == UserRole.CHILD) {
         return '/child';
-      } else if (UserSession.currentUserType == UserType.parent) {
+      } else if (userRole == UserRole.PARENT) {
         return '/parent';
       }
     }
 
-    return null; // No redirigir
+    return null;
   },
   routes: <RouteBase>[
     // ===== RUTAS DE AUTENTICACIÓN =====
@@ -64,19 +67,19 @@ final GoRouter appRouter = GoRouter(
       name: 'fork-users',
       builder: (context, state) => const ForkUsersScreen(),
     ),
-    
+
     GoRoute(
       path: '/child-login',
       name: 'child-login',
       builder: (context, state) => const ChildLoginScreen(),
     ),
-    
+
     GoRoute(
       path: '/parent-login',
       name: 'parent-login',
       builder: (context, state) => const ParentLoginScreen(),
     ),
-    
+
     GoRoute(
       path: '/register',
       name: 'register',
@@ -97,7 +100,8 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/calendar',
               name: 'child-calendar',
-              builder: (context, state) => const ChildMainScreen(), // Navegará al tab del calendario
+              builder: (context, state) =>
+                  const ChildMainScreen(), // Navegará al tab del calendario
             ),
             GoRoute(
               path: '/recommendations',
@@ -138,7 +142,9 @@ final GoRouter appRouter = GoRouter(
               path: '/dashboard',
               name: 'parent-dashboard',
               builder: (context, state) => const Scaffold(
-                body: Center(child: Text('Dashboard del Apoderado - En desarrollo')),
+                body: Center(
+                  child: Text('Dashboard del Apoderado - En desarrollo'),
+                ),
               ),
             ),
             GoRoute(
@@ -152,7 +158,9 @@ final GoRouter appRouter = GoRouter(
               path: '/emergency-contacts',
               name: 'parent-emergency-contacts',
               builder: (context, state) => const Scaffold(
-                body: Center(child: Text('Contactos de Emergencia - En desarrollo')),
+                body: Center(
+                  child: Text('Contactos de Emergencia - En desarrollo'),
+                ),
               ),
             ),
             GoRoute(
@@ -191,7 +199,7 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
   ],
-  
+
   // Manejo de errores
   errorBuilder: (context, state) => Scaffold(
     appBar: AppBar(title: const Text('Página no encontrada')),

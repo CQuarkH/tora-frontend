@@ -106,6 +106,31 @@ class Calendar {
       ],
     );
   }
+
+  factory Calendar.fromJson(Map<String, dynamic> json) {
+    return Calendar(
+      id: json['_id'],
+      childId: json['childId'],
+      date: DateTime.parse(json['date']),
+      blocks: (json['blocks'] as List)
+          .map(
+            (blockJson) => CalendarBlock(
+              id: blockJson['_id'],
+              calendarId: blockJson['calendarId'],
+              period: Period.values.firstWhere(
+                (e) => e.toString() == 'Period.${blockJson['period']}',
+              ),
+              tasks: (blockJson['tasks'] as List)
+                  .map((taskJson) => Task.fromJson(taskJson))
+                  .toList(),
+              emotion: blockJson['emotion'] != null
+                  ? EmotionRecord.fromJson(blockJson['emotion'])
+                  : null,
+            ),
+          )
+          .toList(),
+    );
+  }
 }
 
 class CalendarBlock {
