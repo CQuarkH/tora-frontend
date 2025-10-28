@@ -6,6 +6,7 @@ class LoginButton extends StatelessWidget {
   final IconData icon;
   final Color backgroundColor;
   final Color textColor;
+  final ValueNotifier<bool>? loading;
 
   const LoginButton({
     super.key,
@@ -14,6 +15,7 @@ class LoginButton extends StatelessWidget {
     this.icon = Icons.rocket_launch,
     this.backgroundColor = const Color(0xFFFF9800),
     this.textColor = Colors.white,
+    this.loading,
   });
 
   @override
@@ -36,13 +38,23 @@ class LoginButton extends StatelessWidget {
           children: [
             Icon(icon, size: 20),
             const SizedBox(width: 8),
-            Text(
-              text,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            if (loading?.value ?? false)
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            else
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
           ],
         ),
       ),

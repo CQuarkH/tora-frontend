@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:tora_frontend/features/auth/services/secure_storage_service.dart';
 
 class ApiClient {
-  static const String baseUrl = 'http://172.29.193.93:3000';
+  String get baseUrl => dotenv.env['API_URL'] ?? 'http://localhost:3000';
   final SecureStorageService _storageService = SecureStorageService();
 
   Future<Map<String, String>> _getHeaders() async {

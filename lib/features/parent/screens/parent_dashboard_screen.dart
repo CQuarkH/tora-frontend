@@ -15,7 +15,7 @@ class ParentDashboardScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final dashboardFuture = useMemoized(
-      () => ParentService().getDashboard(childId),
+      () => ParentService.getDashboard(childId),
       [childId],
     );
     final dashboardSnapshot = useFuture(dashboardFuture);

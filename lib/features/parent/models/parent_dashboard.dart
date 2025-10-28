@@ -39,21 +39,30 @@ class ParentDashboard {
 class ParentDashboardSummary {
   final double completedTasksPercentage;
   final int panicButtonCount;
+  final int? totalTasks;
+  final int? completedTasks;
 
   ParentDashboardSummary({
     required this.completedTasksPercentage,
     required this.panicButtonCount,
+    this.totalTasks,
+    this.completedTasks,
   });
 
   factory ParentDashboardSummary.fromJson(Map<String, dynamic> json) {
     return ParentDashboardSummary(
-      completedTasksPercentage: json['completedTasksPercentage'],
-      panicButtonCount: json['panicButtonCount'],
+      completedTasksPercentage: (json['completedTasksPercentage'] ?? 0)
+          .toDouble(),
+      panicButtonCount: json['panicButtonCount'] ?? 0,
+      totalTasks: json['totalTasks'],
+      completedTasks: json['completedTasks'],
     );
   }
 
   Map<String, dynamic> toJson() => {
     'completedTasksPercentage': completedTasksPercentage,
     'panicButtonCount': panicButtonCount,
+    'totalTasks': totalTasks,
+    'completedTasks': completedTasks,
   };
 }
