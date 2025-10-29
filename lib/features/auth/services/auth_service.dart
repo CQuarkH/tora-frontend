@@ -22,6 +22,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Login exitoso: ${response.body}');
         final loginResponse = LoginResponse.fromJson(
           json.decode(response.body),
         );

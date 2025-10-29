@@ -10,6 +10,7 @@ enum Emotion {
   CONTENT;
 
   static Emotion fromString(String? emotionStr) {
+    if (emotionStr == null) return Emotion.SO_SO;
     switch (emotionStr) {
       case 'HAPPY':
         return Emotion.HAPPY;

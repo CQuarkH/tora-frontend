@@ -14,6 +14,7 @@ class ParentService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      print('Dashboard data: $data');
       return _mapDashboardResponse(data);
     } else {
       throw Exception('Error al obtener el dashboard: ${response.body}');
@@ -35,46 +36,52 @@ class ParentService {
     final childData = data['child'];
     final summaryData = data['summary'];
     final emotionsData = data['emotions'];
-    final alertsData = data['alerts'];
+    final alertsData = data['alerts'] as List<dynamic>? ?? [];
 
     // 🧠 Tu backend separa emociones en `lastTwoWeeks` y `monthlyVariation`
     final lastTwoWeeks = emotionsData['lastTwoWeeks'] as List<dynamic>? ?? [];
     final monthlyVariation =
         emotionsData['monthlyVariation'] as List<dynamic>? ?? [];
 
-    // Fusionamos ambas listas para la UI (si lo deseas, puedes tratarlas por separado)
-    final allEmotions = [
-      ...lastTwoWeeks.map(
-        (e) => EmotionRecord(
-          id: e['date'],
-          blockId: 'summary',
-          emotion: Emotion.fromString(
-            e['morning'] ?? e['afternoon'] ?? e['evening'],
-          ),
-          createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
-        ),
-      ),
-      ...monthlyVariation.map(
-        (e) => EmotionRecord(
-          id: e['date'],
-          blockId: 'summary',
-          emotion: Emotion.fromString(e['emotion']),
-          createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
-        ),
-      ),
-    ];
+    // Procesar emociones de lastTwoWeeks
+    final emotionsFromLastTwoWeeks = lastTwoWeeks.map((e) {
+      final date = e['date'] as String;
+
+      // Buscar cualquier emoción que exista (morning, afternoon, evening)
+      String? emotionStr = e['morning'] ?? e['afternoon'] ?? e['evening'];
+
+      return EmotionRecord(
+        id: date,
+        blockId: 'summary',
+        emotion: Emotion.fromString(emotionStr),
+        createdAt: DateTime.tryParse(date) ?? DateTime.now(),
+      );
+    }).toList();
+
+    // Procesar emociones de monthlyVariation
+    final emotionsFromMonthly = monthlyVariation.map((e) {
+      return EmotionRecord(
+        id: e['date'],
+        blockId: 'summary',
+        emotion: Emotion.fromString(e['emotion']),
+        createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
+      );
+    }).toList();
+
+    // Fusionar ambas listas
+    final allEmotions = [...emotionsFromLastTwoWeeks, ...emotionsFromMonthly];
 
     return ParentDashboard(
       child: Child.fromJson(childData),
       summary: ParentDashboardSummary(
-        completedTasksPercentage: summaryData['completedTasksPercentage']
+        completedTasksPercentage: (summaryData['completedTasksPercentage'] ?? 0)
             .toDouble(),
-        panicButtonCount: summaryData['panicButtonCount'],
+        panicButtonCount: summaryData['panicButtonCount'] ?? 0,
+        totalTasks: summaryData['totalTasks'],
+        completedTasks: summaryData['completedTasks'],
       ),
       emotions: allEmotions,
-      alerts: (alertsData as List<dynamic>)
-          .map((a) => Alert.fromJson(a))
-          .toList(),
+      alerts: alertsData.map((a) => Alert.fromJson(a)).toList(),
     );
   }
 }
