@@ -2,7 +2,31 @@
 
 import 'package:flutter/material.dart';
 
-enum Emotion { HAPPY, SAD, SO_SO, ANGRY, CONTENT }
+enum Emotion {
+  HAPPY,
+  SAD,
+  SO_SO,
+  ANGRY,
+  CONTENT;
+
+  static Emotion fromString(String? emotionStr) {
+    if (emotionStr == null) return Emotion.SO_SO;
+    switch (emotionStr) {
+      case 'HAPPY':
+        return Emotion.HAPPY;
+      case 'SAD':
+        return Emotion.SAD;
+      case 'SO_SO':
+        return Emotion.SO_SO;
+      case 'ANGRY':
+        return Emotion.ANGRY;
+      case 'CONTENT':
+        return Emotion.CONTENT;
+      default:
+        return Emotion.SO_SO; // Valor por defecto si no coincide
+    }
+  }
+}
 
 class EmotionRecord {
   final String id;
