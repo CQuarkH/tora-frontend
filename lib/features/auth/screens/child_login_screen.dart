@@ -18,22 +18,29 @@ class ChildLoginScreen extends HookWidget {
     final _authService = useMemoized(() => AuthService());
 
     Future<void> _handleLogin() async {
-      try {
-        final loginResponse = await _authService.login(
-          email: emailController.text.trim(),
-          password: passwordController.text,
-        );
+      if (emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
+        try {
+          final loginResponse = await _authService.login(
+            email: emailController.text.trim(),
+            password: passwordController.text,
+          );
 
-        // Verificar que sea un niño
-        if (loginResponse.user.role != UserRole.CHILD) {
-          await _authService.logout();
-          return;
+          // Verificar que sea un niño
+          if (loginResponse.user.role != UserRole.CHILD) {
+            await _authService.logout();
+            return;
+          }
+
+          context.go('/child');
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error de inicio de sesión: $e')),
+          );
         }
-
-        context.go('/child');
-      } catch (e) {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error de inicio de sesión: $e')),
+          const SnackBar(content: Text('Por favor, completa todos los campos')),
         );
       }
     }
