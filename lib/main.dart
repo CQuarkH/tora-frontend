@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tora_frontend/core/router/router.dart';
+import 'package:tora_frontend/core/services/firebase_notifications_service.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase y Notificaciones
+  await FirebaseNotificationService().initialize();
+
   runApp(const MyApp());
 }
 

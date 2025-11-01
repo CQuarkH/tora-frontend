@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "272590630647",
+    "project_id": "tora-app-d8d8a",
+    "storage_bucket": "tora-app-d8d8a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272590630647:android:00ab37ef49d80d4bd1adf2",
+        "android_client_info": {
+          "package_name": "com.example.tora_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtcFMx_8i0Bfeq7eP1uvzBSnnPOZrY3DU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
