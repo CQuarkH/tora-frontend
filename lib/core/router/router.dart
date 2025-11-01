@@ -9,6 +9,7 @@ import 'package:tora_frontend/features/auth/services/auth_service.dart';
 import 'package:tora_frontend/features/child/screens/child_main_screen.dart';
 import 'package:tora_frontend/features/child/screens/recommendation-child/recommendation_child_screen.dart';
 import 'package:tora_frontend/features/parent/screens/parent_main_screen.dart';
+import 'package:tora_frontend/features/tora-pet/screens/tora_screen.dart';
 
 // Enum para los tipos de usuario
 enum UserType { child, parent }
@@ -65,7 +66,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: 'fork-users',
-      builder: (context, state) => const ForkUsersScreen(),
+      builder: (context, state) => const MascotaView(),
     ),
 
     GoRoute(

@@ -85,5 +85,6 @@ flutter:
     - assets/images/icons/
     - assets/images/characters/
     - assets/images/backgrounds/
+    - assets/images/tora/
     - assets/sounds/
     - .env
