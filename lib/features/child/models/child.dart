@@ -5,7 +5,7 @@ class Child extends User {
   final String name;
   final int age;
   final String grade;
-  final String parentId;
+  final String? parentId; // Hacer nullable
 
   Child({
     required super.id,
@@ -16,13 +16,13 @@ class Child extends User {
     required this.name,
     required this.age,
     required this.grade,
-    required this.parentId,
+    this.parentId, // Ahora es opcional
   }) : super(role: UserRole.CHILD);
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
-      id: json['id'],
-      email: json['email'],
+      id: json['id'] ?? json['_id'] ?? '',
+      email: json['email'] ?? '', // ← Valor por defecto
       passwordHash: json['passwordHash'] ?? '',
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
@@ -30,10 +30,10 @@ class Child extends User {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
-      name: json['name'],
-      age: json['age'],
-      grade: json['grade'],
-      parentId: json['parentId'],
+      name: json['name'] ?? 'Sin nombre',
+      age: json['age'] ?? 0,
+      grade: json['grade'] ?? '',
+      parentId: json['parentId'], // Puede ser null
     );
   }
 

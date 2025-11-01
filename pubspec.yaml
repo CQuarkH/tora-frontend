@@ -55,6 +55,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   firebase_core: ^4.2.0
   firebase_messaging: ^16.0.3
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -85,3 +86,4 @@ flutter:
     - assets/images/characters/
     - assets/images/backgrounds/
     - assets/sounds/
+    - .env

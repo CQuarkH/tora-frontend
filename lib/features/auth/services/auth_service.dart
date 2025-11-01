@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:tora_frontend/features/auth/models/login_response.dart';
 import 'package:tora_frontend/features/auth/models/user.dart';
 import 'package:tora_frontend/features/auth/services/secure_storage_service.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://172.29.193.93:3000';
+  String get baseUrl => dotenv.env['API_URL'] ?? 'http://localhost:3000';
   final SecureStorageService _storageService = SecureStorageService();
 
   // Login
@@ -21,6 +22,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Login exitoso: ${response.body}');
         final loginResponse = LoginResponse.fromJson(
           json.decode(response.body),
         );

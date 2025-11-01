@@ -11,7 +11,7 @@ class ParentNotificationsScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final alertsFuture = useMemoized(
-      () => ParentService().getDashboard(childId),
+      () => ParentService.getNotifications(childId),
       [childId],
     );
     final alertsSnapshot = useFuture(alertsFuture);
@@ -80,7 +80,7 @@ class ParentNotificationsScreen extends HookWidget {
       );
     }
 
-    final alerts = alertsSnapshot.data?.alerts ?? [];
+    final alerts = alertsSnapshot.data ?? [];
     final unreadCount = alerts
         .where((a) => !readAlerts.value.contains(a.id))
         .length;

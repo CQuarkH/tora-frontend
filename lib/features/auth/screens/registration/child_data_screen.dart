@@ -24,26 +24,70 @@ class ChildDataScreen extends HookWidget {
     final ageController = useTextEditingController(
       text: initialData['childAge']?.toString() ?? '',
     );
-    final grades = [
-      '3° Básico',
-      '4° Básico', 
-      '5° Básico',
-    ];
-    
+    final grades = ['3° Básico', '4° Básico', '5° Básico'];
+
     // Asegurar que el valor inicial sea válido o null
     final initialGrade = initialData['childGrade'] as String?;
-    final validInitialGrade = grades.contains(initialGrade) ? initialGrade : null;
+    final validInitialGrade = grades.contains(initialGrade)
+        ? initialGrade
+        : null;
     final selectedGrade = useState<String?>(validInitialGrade);
     final childEmailController = useTextEditingController(
       text: initialData['childEmail'] ?? '',
     );
 
     void handleNext() {
+      // Validar nombre
+      if (childNameController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor ingresa el nombre del niño'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Validar edad
+      final age = int.tryParse(ageController.text.trim());
+      if (age == null || age < 7 || age > 12) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('La edad debe estar entre 7 y 12 años'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Validar grado
+      if (selectedGrade.value == null || selectedGrade.value!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor selecciona el grado escolar'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Validar email
+      final email = childEmailController.text.trim();
+      if (email.isEmpty || !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor ingresa un email válido para el niño'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
       final data = {
         'childName': childNameController.text.trim(),
-        'childAge': int.tryParse(ageController.text.trim()) ?? 0,
-        'childGrade': selectedGrade.value ?? '',
-        'childEmail': childEmailController.text.trim(),
+        'childAge': age,
+        'childGrade': selectedGrade.value,
+        'childEmail': email,
       };
       onNext(data);
     }
@@ -54,7 +98,7 @@ class ChildDataScreen extends HookWidget {
         final horizontalPadding = isTablet ? 48.0 : 16.0;
         final maxWidth = isTablet ? 600.0 : double.infinity;
         final isSmallScreen = constraints.maxWidth < 450;
-        
+
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(
             horizontal: horizontalPadding,
@@ -76,7 +120,7 @@ class ChildDataScreen extends HookWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
+
                     Center(
                       child: Text(
                         'Cuéntanos sobre tu \nhijo o hija',
@@ -89,7 +133,7 @@ class ChildDataScreen extends HookWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    
+
                     Center(
                       child: Text(
                         'Completa algunos datos para personalizar su experiencia',
@@ -115,17 +159,21 @@ class ChildDataScreen extends HookWidget {
                         children: [
                           Text(
                             'Nombre Completo',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: context.darkText,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: context.darkText,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: childNameController,
                             decoration: InputDecoration(
                               hintText: 'Ej: María José González',
-                              prefixIcon: Icon(Icons.person, color: context.mediumText),
+                              prefixIcon: Icon(
+                                Icons.person,
+                                color: context.mediumText,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -133,10 +181,11 @@ class ChildDataScreen extends HookWidget {
                           if (isSmallScreen) ...[
                             Text(
                               'Edad',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: context.darkText,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: context.darkText,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
@@ -144,23 +193,30 @@ class ChildDataScreen extends HookWidget {
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 hintText: '8',
-                                prefixIcon: Icon(Icons.cake, color: context.mediumText),
+                                prefixIcon: Icon(
+                                  Icons.cake,
+                                  color: context.mediumText,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 20),
                             Text(
                               'Grado Escolar',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: context.darkText,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: context.darkText,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
                               value: selectedGrade.value,
                               decoration: InputDecoration(
                                 hintText: 'Selecciona uno',
-                                prefixIcon: Icon(Icons.school, color: context.mediumText),
+                                prefixIcon: Icon(
+                                  Icons.school,
+                                  color: context.mediumText,
+                                ),
                               ),
                               items: grades.map((String grade) {
                                 return DropdownMenuItem<String>(
@@ -177,14 +233,18 @@ class ChildDataScreen extends HookWidget {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Edad',
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          color: context.darkText,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: context.darkText,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                       ),
                                       const SizedBox(height: 8),
                                       TextFormField(
@@ -192,7 +252,10 @@ class ChildDataScreen extends HookWidget {
                                         keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
                                           hintText: '8',
-                                          prefixIcon: Icon(Icons.cake, color: context.mediumText),
+                                          prefixIcon: Icon(
+                                            Icons.cake,
+                                            color: context.mediumText,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -201,21 +264,28 @@ class ChildDataScreen extends HookWidget {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Grado Escolar',
-                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          color: context.darkText,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: context.darkText,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                       ),
                                       const SizedBox(height: 8),
                                       DropdownButtonFormField<String>(
                                         value: selectedGrade.value,
                                         decoration: InputDecoration(
                                           hintText: 'Selecciona uno',
-                                          prefixIcon: Icon(Icons.school, color: context.mediumText),
+                                          prefixIcon: Icon(
+                                            Icons.school,
+                                            color: context.mediumText,
+                                          ),
                                         ),
                                         items: grades.map((String grade) {
                                           return DropdownMenuItem<String>(
@@ -237,10 +307,11 @@ class ChildDataScreen extends HookWidget {
 
                           Text(
                             'Correo Electrónico',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: context.darkText,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: context.darkText,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
@@ -248,7 +319,10 @@ class ChildDataScreen extends HookWidget {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: 'maria.gonzalez@email.com',
-                              prefixIcon: Icon(Icons.email, color: context.mediumText),
+                              prefixIcon: Icon(
+                                Icons.email,
+                                color: context.mediumText,
+                              ),
                             ),
                           ),
                         ],
