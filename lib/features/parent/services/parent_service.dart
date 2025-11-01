@@ -4,6 +4,7 @@ import 'package:tora_frontend/features/child/models/child.dart';
 import 'package:tora_frontend/features/child/models/emotion_record.dart';
 import 'package:tora_frontend/features/parent/models/alert.dart';
 import 'package:tora_frontend/features/parent/models/parent_dashboard.dart';
+import 'package:tora_frontend/features/parent/services/notification_storage_service.dart';
 
 class ParentService {
   static final _apiClient = ApiClient();
@@ -22,7 +23,63 @@ class ParentService {
   }
 
   static Future<List<Alert>> getNotifications(String childId) async {
-    return [];
+    try {
+      // Primero intenta obtener del backend
+      final response = await _apiClient.get('/notifications/user/$childId');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final backendNotifications = data
+            .map((json) => Alert.fromJson(json))
+            .toList();
+
+        // Guardar en caché
+        await NotificationStorageService.saveNotifications(
+          backendNotifications,
+        );
+
+        return backendNotifications;
+      }
+    } catch (e) {
+      print('Error obteniendo notificaciones del backend: $e');
+    }
+
+    // Si falla, usar caché local
+    return await NotificationStorageService.getCachedNotifications();
+  }
+
+  /// Obtener solo las notificaciones del caché local (más rápido)
+  static Future<List<Alert>> getCachedNotifications() async {
+    return await NotificationStorageService.getCachedNotifications();
+  }
+
+  /// Marcar notificación como leída
+  static Future<void> markNotificationAsRead(String notificationId) async {
+    await NotificationStorageService.markAsRead(notificationId);
+
+    // Opcional: sincronizar con backend
+    try {
+      await _apiClient.put('/notifications/$notificationId/read', {});
+    } catch (e) {
+      print('Error marcando como leída en backend: $e');
+    }
+  }
+
+  /// Marcar todas como leídas
+  static Future<void> markAllNotificationsAsRead() async {
+    await NotificationStorageService.markAllAsRead();
+
+    // Opcional: sincronizar con backend
+    try {
+      await _apiClient.post('/notifications/mark-all-read', {});
+    } catch (e) {
+      print('Error marcando todas como leídas en backend: $e');
+    }
+  }
+
+  /// Obtener contador de notificaciones no leídas
+  static Future<int> getUnreadNotificationCount() async {
+    return await NotificationStorageService.getUnreadCount();
   }
 
   /// Obtener alertas recientes (si las quieres separar)

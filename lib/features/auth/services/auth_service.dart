@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:tora_frontend/core/services/firebase_notifications_service.dart';
 import 'package:tora_frontend/features/auth/models/login_response.dart';
 import 'package:tora_frontend/features/auth/models/user.dart';
 import 'package:tora_frontend/features/auth/services/secure_storage_service.dart';
@@ -30,6 +31,19 @@ class AuthService {
         // Guardar token y usuario
         await _storageService.saveToken(loginResponse.accessToken);
         await _storageService.saveUser(loginResponse.user);
+
+        // ✅ AHORA SÍ: Registrar FCM token en backend
+        print('🔔 Registrando FCM token después del login...');
+        final fcmRegistered = await FirebaseNotificationService()
+            .registerTokenInBackend();
+
+        if (fcmRegistered) {
+          print('✅ FCM token registrado correctamente');
+        } else {
+          print(
+            '⚠️ No se pudo registrar FCM token (continuamos de todas formas)',
+          );
+        }
 
         return loginResponse;
       } else {
