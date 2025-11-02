@@ -9,8 +9,8 @@ enum Emotion {
   ANGRY,
   CONTENT;
 
-  static Emotion fromString(String? emotionStr) {
-    if (emotionStr == null) return Emotion.SO_SO;
+  static Emotion? fromString(String? emotionStr) {
+    if (emotionStr == null) return null;
     switch (emotionStr) {
       case 'HAPPY':
         return Emotion.HAPPY;
@@ -23,7 +23,7 @@ enum Emotion {
       case 'CONTENT':
         return Emotion.CONTENT;
       default:
-        return Emotion.SO_SO; // Valor por defecto si no coincide
+        return null; // Valor por defecto si no coincide
     }
   }
 }

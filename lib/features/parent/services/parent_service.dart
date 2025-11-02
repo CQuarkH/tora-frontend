@@ -95,35 +95,51 @@ class ParentService {
     final emotionsData = data['emotions'];
     final alertsData = data['alerts'] as List<dynamic>? ?? [];
 
-    // 🧠 Tu backend separa emociones en `lastTwoWeeks` y `monthlyVariation`
     final lastTwoWeeks = emotionsData['lastTwoWeeks'] as List<dynamic>? ?? [];
     final monthlyVariation =
         emotionsData['monthlyVariation'] as List<dynamic>? ?? [];
 
     // Procesar emociones de lastTwoWeeks
-    final emotionsFromLastTwoWeeks = lastTwoWeeks.map((e) {
-      final date = e['date'] as String;
+    final emotionsFromLastTwoWeeks = lastTwoWeeks
+        .map((e) {
+          final date = e['date'] as String;
 
-      // Buscar cualquier emoción que exista (morning, afternoon, evening)
-      String? emotionStr = e['morning'] ?? e['afternoon'] ?? e['evening'];
+          // Buscar cualquier emoción que exista
+          String? emotionStr = e['morning'] ?? e['afternoon'] ?? e['evening'];
 
-      return EmotionRecord(
-        id: date,
-        blockId: 'summary',
-        emotion: Emotion.fromString(emotionStr),
-        createdAt: DateTime.tryParse(date) ?? DateTime.now(),
-      );
-    }).toList();
+          // 👇 Si no hay emoción, retorna null para filtrar después
+          if (emotionStr == null) return null;
+
+          final emotion = Emotion.fromString(emotionStr);
+
+          // 👇 Si la emoción no es válida, también retorna null
+          if (emotion == null) return null;
+
+          return EmotionRecord(
+            id: date,
+            blockId: 'summary',
+            emotion: emotion,
+            createdAt: DateTime.tryParse(date) ?? DateTime.now(),
+          );
+        })
+        .whereType<EmotionRecord>() // 👈 Filtra los nulls
+        .toList();
 
     // Procesar emociones de monthlyVariation
-    final emotionsFromMonthly = monthlyVariation.map((e) {
-      return EmotionRecord(
-        id: e['date'],
-        blockId: 'summary',
-        emotion: Emotion.fromString(e['emotion']),
-        createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
-      );
-    }).toList();
+    final emotionsFromMonthly = monthlyVariation
+        .map((e) {
+          final emotion = Emotion.fromString(e['emotion']);
+          if (emotion == null) return null;
+
+          return EmotionRecord(
+            id: e['date'],
+            blockId: 'summary',
+            emotion: emotion,
+            createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
+          );
+        })
+        .whereType<EmotionRecord>() // 👈 Filtra los nulls
+        .toList();
 
     // Fusionar ambas listas
     final allEmotions = [...emotionsFromLastTwoWeeks, ...emotionsFromMonthly];
