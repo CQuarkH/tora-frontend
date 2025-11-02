@@ -57,6 +57,7 @@ class AuthService {
 
   // Logout
   Future<void> logout() async {
+    await FirebaseNotificationService().unregisterTokenFromBackend();
     await _storageService.clearAll();
   }
 

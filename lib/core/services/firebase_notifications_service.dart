@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tora_frontend/core/services/api_client.dart';
+import 'package:tora_frontend/features/auth/services/auth_service.dart';
+import 'package:tora_frontend/features/child/models/child.dart';
 import 'package:tora_frontend/features/parent/services/notification_storage_service.dart';
 import 'package:tora_frontend/features/parent/models/alert.dart';
 
@@ -112,6 +115,24 @@ class FirebaseNotificationService {
       return true;
     } catch (e) {
       print('❌ Error registrando token en backend: $e');
+      _tokenRegisteredInBackend = false;
+      return false;
+    }
+  }
+
+  /// Eliminar token del backend (llamar en logout)
+  Future<bool> unregisterTokenFromBackend() async {
+    try {
+      print('📤 Eliminando token del backend');
+      final apiClient = ApiClient();
+
+      await apiClient.delete('/notifications/unregister-token/$_fcmToken');
+
+      _tokenRegisteredInBackend = false;
+      print('✅ Token eliminado del backend exitosamente');
+      return true;
+    } catch (e) {
+      print('❌ Error eliminando token en backend: $e');
       _tokenRegisteredInBackend = false;
       return false;
     }
@@ -284,6 +305,63 @@ class FirebaseNotificationService {
         break;
       default:
         print('📱 Notificación general');
+    }
+  }
+
+  Future<Map<String, dynamic>> sendTestToParent({
+    required String title,
+    required String body,
+    Map<String, String>? data,
+  }) async {
+    try {
+      // Obtener usuario actual (debe ser un niño)
+      final AuthService _authService = AuthService();
+      final ApiClient _apiClient = ApiClient();
+      final user = await _authService.getCurrentUser();
+
+      if (user == null || user is! Child) {
+        throw Exception('Usuario no es un niño');
+      }
+
+      final child = user as Child;
+
+      if (child.parentId == null) {
+        throw Exception('No hay padre asignado');
+      }
+
+      print('📤 Enviando notificación de prueba al padre...');
+      print('  Parent ID: ${child.parentId}');
+      print('  Title: $title');
+      print('  Body: $body');
+
+      final response = await _apiClient.post('/notifications/send-to-parent', {
+        'parentId': child.parentId,
+        'title': title,
+        'body': body,
+        'data':
+            data ??
+            {
+              'type': 'TEST',
+              'timestamp': DateTime.now().toIso8601String(),
+              'sentBy': 'child',
+            },
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final result = json.decode(response.body);
+        print('✅ Notificación enviada exitosamente');
+        print('Resultado: $result');
+        return {
+          'success': true,
+          'message': 'Notificación enviada al padre',
+          'data': result,
+        };
+      } else {
+        throw Exception('Error del servidor: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ Error enviando notificación: $e');
+      return {'success': false, 'message': e.toString()};
     }
   }
 
