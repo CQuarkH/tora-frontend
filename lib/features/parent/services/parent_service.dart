@@ -15,7 +15,7 @@ class ParentService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('Dashboard data: $data');
+      print("Dashboard data: $data");
       return _mapDashboardResponse(data);
     } else {
       throw Exception('Error al obtener el dashboard: ${response.body}');
@@ -122,7 +122,7 @@ class ParentService {
             createdAt: DateTime.tryParse(date) ?? DateTime.now(),
           );
         })
-        .whereType<EmotionRecord>() // 👈 Filtra los nulls
+        .whereType<EmotionRecord>()
         .toList();
 
     // Procesar emociones de monthlyVariation
@@ -149,7 +149,7 @@ class ParentService {
       summary: ParentDashboardSummary(
         completedTasksPercentage: (summaryData['completedTasksPercentage'] ?? 0)
             .toDouble(),
-        panicButtonCount: summaryData['panicButtonCount'] ?? 0,
+        panicButtonCount: summaryData['selfRegulationEvents'] ?? 0,
         totalTasks: summaryData['totalTasks'],
         completedTasks: summaryData['completedTasks'],
       ),
