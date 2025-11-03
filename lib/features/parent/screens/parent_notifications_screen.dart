@@ -10,156 +10,198 @@ class ParentNotificationsScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final alertsFuture = useMemoized(
-      () => ParentService.getNotifications(childId),
-      [childId],
-    );
-    final alertsSnapshot = useFuture(alertsFuture);
-    final readAlerts = useState<Set<String>>({});
+    // Usar estado local en lugar de Future para poder actualizar
+    final alerts = useState<List<Alert>>([]);
+    final isLoading = useState(true);
+    final error = useState<String?>(null);
 
-    void markAsRead(String alertId) {
-      readAlerts.value = {...readAlerts.value, alertId};
+    // Cargar notificaciones
+    Future<void> loadNotifications() async {
+      isLoading.value = true;
+      error.value = null;
+
+      try {
+        final notifications = await ParentService.getCachedNotifications();
+        alerts.value = notifications;
+      } catch (e) {
+        error.value = e.toString();
+      } finally {
+        isLoading.value = false;
+      }
     }
 
-    void markAllAsRead(List<Alert> alerts) {
-      readAlerts.value = alerts.map((a) => a.id).toSet();
+    // Cargar al inicio
+    useEffect(() {
+      loadNotifications();
+      return null;
+    }, []);
+
+    Future<void> markAsRead(String alertId) async {
+      await ParentService.markNotificationAsRead(alertId);
+
+      // Actualizar lista local
+      final index = alerts.value.indexWhere((a) => a.id == alertId);
+      if (index != -1) {
+        final updated = List<Alert>.from(alerts.value);
+        updated[index] = updated[index].copyWith(read: true);
+        alerts.value = updated;
+      }
     }
 
-    if (alertsSnapshot.connectionState == ConnectionState.waiting) {
+    Future<void> markAllAsRead() async {
+      await ParentService.markAllNotificationsAsRead();
+
+      // Actualizar lista local
+      alerts.value = alerts.value.map((a) => a.copyWith(read: true)).toList();
+    }
+
+    final unreadCount = alerts.value.where((a) => !a.read).length;
+
+    if (isLoading.value) {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Notificaciones',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        appBar: _buildAppBar(context),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (alertsSnapshot.hasError) {
+    if (error.value != null) {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Notificaciones',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        appBar: _buildAppBar(context),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('Error: ${alertsSnapshot.error}'),
+              Text('Error: ${error.value}'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: loadNotifications,
+                child: const Text('Reintentar'),
+              ),
             ],
           ),
         ),
       );
     }
 
-    final alerts = alertsSnapshot.data ?? [];
-    final unreadCount = alerts
-        .where((a) => !readAlerts.value.contains(a.id))
-        .length;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Notificaciones',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+      appBar: _buildAppBar(context, unreadCount: unreadCount),
+      body: RefreshIndicator(
+        onRefresh: loadNotifications,
+        child: Column(
+          children: [
+            Expanded(
+              child: alerts.value.isEmpty
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: alerts.value.length,
+                      itemBuilder: (context, index) {
+                        final alert = alerts.value[index];
+                        return _NotificationCard(
+                          alert: alert,
+                          isRead: alert.read,
+                          onTap: () => markAsRead(alert.id),
+                        );
+                      },
+                    ),
+            ),
+            if (unreadCount > 0)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: markAllAsRead,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade200,
+                    foregroundColor: Colors.black87,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Marcar todas como leídas ($unreadCount)',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: alerts.isEmpty
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.notifications_none,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'No hay notificaciones',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: alerts.length,
-                    itemBuilder: (context, index) {
-                      final alert = alerts[index];
-                      final isRead = readAlerts.value.contains(alert.id);
+    );
+  }
 
-                      return _NotificationCard(
-                        alert: alert,
-                        isRead: isRead,
-                        onTap: () => markAsRead(alert.id),
-                      );
-                    },
-                  ),
+  AppBar _buildAppBar(BuildContext context, {int unreadCount = 0}) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Row(
+        children: [
+          const Text(
+            'Notificaciones',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          if (unreadCount > 0)
+          if (unreadCount > 0) ...[
+            const SizedBox(width: 8),
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () => markAllAsRead(alerts),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade200,
-                  foregroundColor: Colors.black87,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Marcar todas como leídas',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '$unreadCount',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.notifications_none, size: 64, color: Colors.grey),
+          SizedBox(height: 16),
+          Text(
+            'No hay notificaciones',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
         ],
       ),
     );

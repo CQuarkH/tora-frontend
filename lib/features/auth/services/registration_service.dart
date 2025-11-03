@@ -70,20 +70,6 @@ class RegistrationService {
       final childData = json.decode(childResponse.body);
       print('✅ Hijo registrado con ID: ${childData['user']['id']}');
 
-      // PASO 3: Guardar contactos de emergencia (si se implementa en el backend)
-      if (emergencyContacts != null && emergencyContacts.isNotEmpty) {
-        print(
-          '📝 Guardando ${emergencyContacts.length} contactos de emergencia...',
-        );
-        // TODO: Cuando tu backend tenga el endpoint, descomenta esto:
-        /*
-        await _saveEmergencyContacts(
-          childId: childData['user']['id'],
-          contacts: emergencyContacts,
-        );
-        */
-      }
-
       // PASO 4: Hacer login automático con la cuenta del padre
       print('🔐 Iniciando sesión automática...');
       final authService = AuthService();
@@ -93,6 +79,17 @@ class RegistrationService {
       );
 
       print('✅ Registro completo exitoso');
+
+      // PASO 3: Guardar contactos de emergencia (si se implementa en el backend)
+      if (emergencyContacts != null && emergencyContacts.isNotEmpty) {
+        print(
+          '📝 Guardando ${emergencyContacts.length} contactos de emergencia...',
+        );
+        await _saveEmergencyContacts(
+          childId: childData['user']['id'],
+          contacts: emergencyContacts,
+        );
+      }
 
       return RegistrationResult(
         success: true,
@@ -115,14 +112,22 @@ class RegistrationService {
 
     for (var contact in contacts) {
       try {
-        await apiClient.post('/self-regulation/emergency-contacts/$childId', {
-          'name': contact['name'],
-          'phone': contact['phone'],
-          'email': contact['email'] ?? '',
-          'relationship': contact['relation'] ?? 'Contacto de emergencia',
-          'receiveAlerts': true,
-          'priority': 1,
-        });
+        final response = await apiClient
+            .post('/self-regulation/emergency-contacts', {
+              'name': contact['name'],
+              'phone': contact['phone'],
+              'email': contact['email'] ?? 'test@gmail.com',
+              'relationship': contact['relation'] ?? 'Contacto de emergencia',
+              'receiveAlerts': true,
+              'priority': 1,
+            });
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          print('✅ Contacto ${contact['name']} guardado correctamente.');
+        } else {
+          print(
+            '❌ Error guardando contacto ${contact['name']}: ${response.body}',
+          );
+        }
       } catch (e) {
         print('Error guardando contacto ${contact['name']}: $e');
       }

@@ -33,45 +33,54 @@ class EmotionCalendarCard extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-            ),
-            itemCount: 14,
-            itemBuilder: (context, index) {
-              if (index < recentEmotions.length) {
-                final emotionRecord = recentEmotions[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    color: emotionRecord.emotion.backgroundColor,
-                    borderRadius: BorderRadius.circular(6),
+          recentEmotions.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No hay registros de emociones recientes.',
+                    style: TextStyle(color: Colors.grey),
                   ),
-                  child: Center(
-                    child: Text(
-                      emotionRecord.emotion.emoji,
-                      style: const TextStyle(fontSize: 24),
-                      textAlign: TextAlign.center,
-                    ),
+                )
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 7,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
                   ),
-                );
-              }
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(6),
+                  itemCount: 14,
+                  itemBuilder: (context, index) {
+                    if (index < recentEmotions.length) {
+                      final emotionRecord = recentEmotions[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: emotionRecord.emotion.backgroundColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Center(
+                          child: Text(
+                            emotionRecord.emotion.emoji,
+                            style: const TextStyle(fontSize: 24),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
           const SizedBox(height: 8),
-          const Text(
-            'Últimas 2 semanas',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
-          ),
+          recentEmotions.isNotEmpty
+              ? const Text(
+                  'Últimas 2 semanas',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );

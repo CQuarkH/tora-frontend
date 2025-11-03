@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tora_frontend/core/router/router.dart';
+import 'package:tora_frontend/core/services/firebase_notifications_service.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 
 Future<void> main() async {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase y Notificaciones
+  await FirebaseNotificationService().initialize();
   await dotenv.load(fileName: ".env");
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

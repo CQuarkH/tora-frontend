@@ -61,11 +61,6 @@ class _CompletedTasksCard extends StatelessWidget {
               color: Colors.green.shade600,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            '↑ 12% vs mes anterior',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
         ],
       ),
     );
@@ -109,11 +104,6 @@ class _PanicButtonCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Colors.orange.shade600,
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '↓ 3 vs mes anterior',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
         ],
       ),
