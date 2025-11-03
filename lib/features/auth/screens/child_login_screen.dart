@@ -18,7 +18,6 @@ class ChildLoginScreen extends HookWidget {
     final _authService = useMemoized(() => AuthService());
 
     Future<void> _handleLogin() async {
-        context.go('/child');
       if (emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty) {
         try {

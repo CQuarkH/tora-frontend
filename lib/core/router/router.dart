@@ -66,7 +66,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: 'fork-users',
-      builder: (context, state) => const MascotaView(),
+      builder: (context, state) => const ForkUsersScreen(),
     ),
 
     GoRoute(
@@ -112,9 +112,7 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/pet',
               name: 'child-pet',
-              builder: (context, state) => const Scaffold(
-                body: Center(child: Text('Mascota - En desarrollo')),
-              ),
+              builder: (context, state) => const ToraScreen(),
             ),
             GoRoute(
               path: '/communication',

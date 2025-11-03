@@ -5,6 +5,7 @@ import 'package:tora_frontend/core/widgets/logout_helper.dart';
 import 'package:tora_frontend/features/child/screens/communication-non-verbale/child_communication_non_verbale_screen.dart';
 import 'package:tora_frontend/features/child/screens/recommendation-child/recommendation_child_screen.dart';
 import 'package:tora_frontend/features/child/services/self_regulation_service.dart';
+import 'package:tora_frontend/features/tora-pet/screens/tora_screen.dart';
 
 class ChildMainScreen extends StatefulWidget {
   const ChildMainScreen({super.key});
@@ -61,7 +62,7 @@ class _ChildMainScreenState extends State<ChildMainScreen> {
         const ChildRecommendationScreen(),
       ),
       _buildScreenWithAppBar("Alertas", const Placeholder()),
-      _buildScreenWithAppBar("Tora", const Placeholder()),
+      _buildScreenWithAppBar("Tora", const ToraScreen()),
       _buildScreenWithAppBar(
         "Temas",
         const ChildCommunicationNonVerbaleScreen(),

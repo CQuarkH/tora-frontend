@@ -11,13 +11,15 @@ class ToraScreen extends HookWidget {
     final mascotaState = useMemoized(() => MascotaState(), []);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tora')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, // títulos a la izquierda
           children: [
-            // Área de visualización
+          
+           
+            BackgroundSelector(mascotaState: mascotaState),
+            const SizedBox(height: 20),
             Center(
               child: Container(
                 width: 300,
@@ -30,13 +32,7 @@ class ToraScreen extends HookWidget {
             ),
             const SizedBox(height: 30),
 
-            // Selector de fondo
-            const Text(
-              'Selecciona el Fondo:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            BackgroundSelector(mascotaState: mascotaState),
-            const SizedBox(height: 20),
+         
 
             // Selector de sombreros
             const Text(
