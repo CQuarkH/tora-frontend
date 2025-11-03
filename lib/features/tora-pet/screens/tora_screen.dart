@@ -3,15 +3,15 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'mascota_state.dart';
 
-class MascotaView extends HookWidget {
-  const MascotaView({super.key});
+class ToraScreen extends HookWidget {
+  const ToraScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final mascotaState = useMemoized(() => MascotaState(), []);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mascota Personalizable (Hooks) 🎣')),
+      appBar: AppBar(title: const Text('Tora')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
