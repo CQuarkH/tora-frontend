@@ -4,6 +4,7 @@ import 'package:tora_frontend/features/child/models/child.dart';
 import 'package:tora_frontend/features/child/models/emotion_record.dart';
 import 'package:tora_frontend/features/parent/models/alert.dart';
 import 'package:tora_frontend/features/parent/models/parent_dashboard.dart';
+import 'package:tora_frontend/features/parent/services/notification_storage_service.dart';
 
 class ParentService {
   static final _apiClient = ApiClient();
@@ -14,7 +15,7 @@ class ParentService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('Dashboard data: $data');
+      print("Dashboard data: $data");
       return _mapDashboardResponse(data);
     } else {
       throw Exception('Error al obtener el dashboard: ${response.body}');
@@ -22,7 +23,63 @@ class ParentService {
   }
 
   static Future<List<Alert>> getNotifications(String childId) async {
-    return [];
+    try {
+      // Primero intenta obtener del backend
+      final response = await _apiClient.get('/notifications/user/$childId');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final backendNotifications = data
+            .map((json) => Alert.fromJson(json))
+            .toList();
+
+        // Guardar en caché
+        await NotificationStorageService.saveNotifications(
+          backendNotifications,
+        );
+
+        return backendNotifications;
+      }
+    } catch (e) {
+      print('Error obteniendo notificaciones del backend: $e');
+    }
+
+    // Si falla, usar caché local
+    return await NotificationStorageService.getCachedNotifications();
+  }
+
+  /// Obtener solo las notificaciones del caché local (más rápido)
+  static Future<List<Alert>> getCachedNotifications() async {
+    return await NotificationStorageService.getCachedNotifications();
+  }
+
+  /// Marcar notificación como leída
+  static Future<void> markNotificationAsRead(String notificationId) async {
+    await NotificationStorageService.markAsRead(notificationId);
+
+    // Opcional: sincronizar con backend
+    try {
+      await _apiClient.put('/notifications/$notificationId/read', {});
+    } catch (e) {
+      print('Error marcando como leída en backend: $e');
+    }
+  }
+
+  /// Marcar todas como leídas
+  static Future<void> markAllNotificationsAsRead() async {
+    await NotificationStorageService.markAllAsRead();
+
+    // Opcional: sincronizar con backend
+    try {
+      await _apiClient.post('/notifications/mark-all-read', {});
+    } catch (e) {
+      print('Error marcando todas como leídas en backend: $e');
+    }
+  }
+
+  /// Obtener contador de notificaciones no leídas
+  static Future<int> getUnreadNotificationCount() async {
+    return await NotificationStorageService.getUnreadCount();
   }
 
   /// Obtener alertas recientes (si las quieres separar)
@@ -38,35 +95,51 @@ class ParentService {
     final emotionsData = data['emotions'];
     final alertsData = data['alerts'] as List<dynamic>? ?? [];
 
-    // 🧠 Tu backend separa emociones en `lastTwoWeeks` y `monthlyVariation`
     final lastTwoWeeks = emotionsData['lastTwoWeeks'] as List<dynamic>? ?? [];
     final monthlyVariation =
         emotionsData['monthlyVariation'] as List<dynamic>? ?? [];
 
     // Procesar emociones de lastTwoWeeks
-    final emotionsFromLastTwoWeeks = lastTwoWeeks.map((e) {
-      final date = e['date'] as String;
+    final emotionsFromLastTwoWeeks = lastTwoWeeks
+        .map((e) {
+          final date = e['date'] as String;
 
-      // Buscar cualquier emoción que exista (morning, afternoon, evening)
-      String? emotionStr = e['morning'] ?? e['afternoon'] ?? e['evening'];
+          // Buscar cualquier emoción que exista
+          String? emotionStr = e['morning'] ?? e['afternoon'] ?? e['evening'];
 
-      return EmotionRecord(
-        id: date,
-        blockId: 'summary',
-        emotion: Emotion.fromString(emotionStr),
-        createdAt: DateTime.tryParse(date) ?? DateTime.now(),
-      );
-    }).toList();
+          // 👇 Si no hay emoción, retorna null para filtrar después
+          if (emotionStr == null) return null;
+
+          final emotion = Emotion.fromString(emotionStr);
+
+          // 👇 Si la emoción no es válida, también retorna null
+          if (emotion == null) return null;
+
+          return EmotionRecord(
+            id: date,
+            blockId: 'summary',
+            emotion: emotion,
+            createdAt: DateTime.tryParse(date) ?? DateTime.now(),
+          );
+        })
+        .whereType<EmotionRecord>()
+        .toList();
 
     // Procesar emociones de monthlyVariation
-    final emotionsFromMonthly = monthlyVariation.map((e) {
-      return EmotionRecord(
-        id: e['date'],
-        blockId: 'summary',
-        emotion: Emotion.fromString(e['emotion']),
-        createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
-      );
-    }).toList();
+    final emotionsFromMonthly = monthlyVariation
+        .map((e) {
+          final emotion = Emotion.fromString(e['emotion']);
+          if (emotion == null) return null;
+
+          return EmotionRecord(
+            id: e['date'],
+            blockId: 'summary',
+            emotion: emotion,
+            createdAt: DateTime.tryParse(e['date']) ?? DateTime.now(),
+          );
+        })
+        .whereType<EmotionRecord>() // 👈 Filtra los nulls
+        .toList();
 
     // Fusionar ambas listas
     final allEmotions = [...emotionsFromLastTwoWeeks, ...emotionsFromMonthly];
@@ -76,7 +149,7 @@ class ParentService {
       summary: ParentDashboardSummary(
         completedTasksPercentage: (summaryData['completedTasksPercentage'] ?? 0)
             .toDouble(),
-        panicButtonCount: summaryData['panicButtonCount'] ?? 0,
+        panicButtonCount: summaryData['selfRegulationEvents'] ?? 0,
         totalTasks: summaryData['totalTasks'],
         completedTasks: summaryData['completedTasks'],
       ),

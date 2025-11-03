@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
-
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -13,24 +14,35 @@ import 'package:tora_frontend/features/child/screens/calendar/child_daydetail_sc
 class ChildCalendarScreen extends HookWidget {
   const ChildCalendarScreen({super.key});
 
+  // 🇨🇱 Obtener la fecha actual en zona horaria de Chile
+  static DateTime _getChileDateTime() {
+    final chile = tz.getLocation('America/Santiago');
+    return tz.TZDateTime.now(chile);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Inicializar los datos de localización española
     useEffect(() {
+      tz.initializeTimeZones();
       initializeDateFormatting('es_ES', null);
       return null;
     }, []);
 
     bool canOpen(DateTime date) {
-      final now = DateTime.now();
-      return date.isAfter(now) ||
-          date.isAtSameMomentAs(DateTime(now.year, now.month, now.day));
+      final now = _getChileDateTime(); // 👈 Usar hora de Chile
+      final today = DateTime(now.year, now.month, now.day);
+      final dateOnly = DateTime(date.year, date.month, date.day);
+
+      return dateOnly.isAfter(today) || dateOnly.isAtSameMomentAs(today);
     }
 
     bool isPastDay(DateTime date) {
-      final now = DateTime.now();
+      final now = _getChileDateTime(); // 👈 Usar hora de Chile
       final today = DateTime(now.year, now.month, now.day);
-      return date.isBefore(today);
+      final dateOnly = DateTime(date.year, date.month, date.day);
+
+      return dateOnly.isBefore(today);
     }
 
     return FutureBuilder(
@@ -47,7 +59,6 @@ class ChildCalendarScreen extends HookWidget {
             padding: const EdgeInsets.all(16.0),
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              // Configurar localización para español
               localizationsDelegates: const [
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
@@ -59,8 +70,9 @@ class ChildCalendarScreen extends HookWidget {
                 backgroundColor: ToraTheme.pureWhite,
                 body: MonthView(
                   startDay: WeekDays.monday,
+                  // 👇 Iniciar el calendario en la fecha actual de Chile
+                  initialMonth: _getChileDateTime(),
 
-                  // Header personalizado con tema aplicado
                   headerBuilder: (date) {
                     final formatter = DateFormat('MMMM yyyy', 'es_ES');
                     final monthYear = formatter.format(date);
@@ -90,7 +102,6 @@ class ChildCalendarScreen extends HookWidget {
                         ],
                       ),
                       child: Text(
-                        // Capitalizar la primera letra del mes
                         monthYear.substring(0, 1).toUpperCase() +
                             monthYear.substring(1),
                         textAlign: TextAlign.center,
@@ -104,7 +115,6 @@ class ChildCalendarScreen extends HookWidget {
                     );
                   },
 
-                  // Builder personalizado para los días de la semana
                   weekDayBuilder: (dayIndex) {
                     final weekDays = [
                       'Lun',
@@ -140,9 +150,14 @@ class ChildCalendarScreen extends HookWidget {
                     );
                   },
 
-                  // Builder personalizado para las celdas de días
                   cellBuilder: (date, events, isToday, isInMonth, isSelected) {
-                    final isCurrentDay = isToday;
+                    // 👇 Recalcular isToday con la hora de Chile
+                    final chileNow = _getChileDateTime();
+                    final isCurrentDay =
+                        date.year == chileNow.year &&
+                        date.month == chileNow.month &&
+                        date.day == chileNow.day;
+
                     final isPast = isPastDay(date);
                     final canOpenDay = canOpen(date);
 
@@ -152,21 +167,17 @@ class ChildCalendarScreen extends HookWidget {
                     double elevation = 0;
 
                     if (isCurrentDay) {
-                      // Día actual - amarillo cálido
                       backgroundColor = ToraTheme.warmYellow;
                       textColor = ToraTheme.darkText;
                       borderColor = ToraTheme.warmYellow.withOpacity(0.5);
                       elevation = 4;
                     } else if (isPast) {
-                      // Días pasados - más oscuros y desaturados
                       backgroundColor = ToraTheme.lightText.withOpacity(0.3);
                       textColor = ToraTheme.lightText;
                     } else if (!isInMonth) {
-                      // Días fuera del mes actual
                       backgroundColor = ToraTheme.pureWhite.withOpacity(0.3);
                       textColor = ToraTheme.lightText.withOpacity(0.5);
                     } else {
-                      // Días futuros normales
                       backgroundColor = ToraTheme.pureWhite;
                       textColor = ToraTheme.darkText;
                       borderColor = ToraTheme.lightGray.withOpacity(0.3);
@@ -209,7 +220,6 @@ class ChildCalendarScreen extends HookWidget {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Número del día
                                 Text(
                                   date.day.toString(),
                                   style: TextStyle(
@@ -222,7 +232,6 @@ class ChildCalendarScreen extends HookWidget {
                                   ),
                                 ),
 
-                                // Indicador de eventos (si los hay)
                                 if (events.isNotEmpty)
                                   Container(
                                     margin: const EdgeInsets.only(top: 4),
@@ -248,7 +257,6 @@ class ChildCalendarScreen extends HookWidget {
                                     ),
                                   ),
 
-                                // Indicador visual para día actual
                                 if (isCurrentDay)
                                   Container(
                                     margin: const EdgeInsets.only(top: 2),
@@ -275,8 +283,6 @@ class ChildCalendarScreen extends HookWidget {
                   useAvailableVerticalSpace: true,
                   controller: EventController(),
                   cellAspectRatio: 1.2,
-
-                  // Personalizar la apariencia general del calendario
                   borderColor: ToraTheme.lightGray.withOpacity(0.2),
                   borderSize: 0.5,
                 ),

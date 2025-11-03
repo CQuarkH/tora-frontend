@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:tora_frontend/features/auth/services/auth_service.dart';
 import 'package:tora_frontend/features/child/models/calendar.dart';
 import 'package:tora_frontend/features/child/models/emotion_record.dart';
@@ -13,33 +15,56 @@ import 'package:tora_frontend/features/child/widgets/timers_section.dart';
 class ChildDayDetailScreen extends HookWidget {
   const ChildDayDetailScreen({super.key});
 
+  // 🇨🇱 Obtener fecha y hora actual en zona horaria de Chile
+  static DateTime _getChileDateTime() {
+    final chile = tz.getLocation('America/Santiago');
+    return tz.TZDateTime.now(chile);
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedPeriod = useState<Period>(Period.MORNING);
+    final chileNow = useMemoized(
+      () => _getChileDateTime(),
+    ); // 👈 Calcular una vez
+
     final currentCalendar = useState<Calendar>(
-      Calendar(id: '', childId: '', date: DateTime.now(), blocks: []),
+      Calendar(
+        id: '',
+        childId: '',
+        date: chileNow, // 👈 Usar hora de Chile
+        blocks: [],
+      ),
     );
+
+    // 👇 Inicializar timezone en el primer render
+    useEffect(() {
+      tz.initializeTimeZones();
+      return null;
+    }, []);
 
     useEffect(() {
       Future.microtask(() async {
         final authService = AuthService();
         final user = await authService.getCurrentUser();
 
+        // 👇 Usar la fecha de Chile para obtener el calendario
         final calendar = await CalendarService.getDailyCalendar(
           childId: user!.id,
-          date: DateTime.now(),
+          date: chileNow,
         );
         currentCalendar.value = calendar;
       });
       return null;
-    }, []);
+    }, [chileNow]); // 👈 Dependencia de chileNow
 
     // Obtener el bloque actual basado en el período seleccionado
     final currentBlock = useMemoized(() {
       return currentCalendar.value.blocks.firstWhere(
         (block) => block.period == selectedPeriod.value,
         orElse: () => CalendarBlock(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: chileNow.millisecondsSinceEpoch
+              .toString(), // 👈 Usar hora de Chile
           calendarId: currentCalendar.value.id,
           period: selectedPeriod.value,
           tasks: [],
