@@ -163,32 +163,167 @@ Future<void> showInsufficientCoinsDialog(
   required int required,
   required int current,
 }) {
+  final cs = Theme.of(context).colorScheme;
+  final size = MediaQuery.of(context).size;
+  final isNarrow = size.width < 340;
+  final isTiny = size.width < 300;
+  final baseScaler = MediaQuery.of(context).textScaler;
+  final scaled = baseScaler.scale(isTiny ? 0.85 : (isNarrow ? 0.92 : 1.0));
+
+  final shortfall = (required - current).clamp(0, required);
+
   return showDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('¡Uy! No alcanza 😅'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/images/tora/tora_seller.png',
-            width: 48,
-            height: 48,
+    barrierDismissible: false,
+    builder: (ctx) => Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      backgroundColor: cs.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: SafeArea(
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scaled)),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28), // Aumentado aquí
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// TÍTULO + CIERRE
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Monedas insuficientes',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: cs.primary,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close, color: cs.onSurface),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      tooltip: 'Cerrar',
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                /// IMAGEN
+                SizedBox(
+                  width: math.min(size.width * 0.5, 180),
+                  height: math.min(size.width * 0.5, 180),
+                  child: Image.asset(
+                    'assets/images/tora/tora_seller_sad.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                /// TEXTO INTRODUCTORIO
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    '¡Vaya!\nAún no tienes suficientes monedas para esto.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w600,
+                      color: cs.primary,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// MENSAJE DE DETALLE
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: cs.primary,
+                      ),
+                      children: [
+                        TextSpan(text: '“$itemName” cuesta '),
+                        TextSpan(
+                          text: '$required 🪙',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange.shade800,
+                          ),
+                        ),
+                        const TextSpan(text: ', pero tú tienes '),
+                        TextSpan(
+                          text: '$current 🪙',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.shade700,
+                          ),
+                        ),
+                        const TextSpan(text: ' por ahora.'),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                /// CAJA DE DÉFICIT
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: cs.secondary, width: 1.4),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  child: Text(
+                    'Te faltan $shortfall 🪙 para completar la compra.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: cs.secondary),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                /// BOTÓN
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.tonal(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: cs.primaryContainer,
+                      foregroundColor: cs.onSurface,
+                    ),
+                    child: Text(
+                      'Entendido',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Parece que no tienes suficientes monedas para comprar "$itemName".\n\n'
-            'Necesitas $required monedas, pero solo tienes $current.',
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(ctx).pop(),
-          child: const Text('Entendido'),
         ),
-      ],
+      ),
     ),
   );
 }

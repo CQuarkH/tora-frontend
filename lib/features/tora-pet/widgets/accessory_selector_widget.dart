@@ -111,14 +111,14 @@ class _AccessoryTileState extends State<_AccessoryTile>
       return;
     }
 
-    // ── VALIDACIÓN/COMPRA (monedas comentadas) ─────────────────────────────
-    // final int userCoins = 0; // TODO: obtener de tu estado global
-    // if (userCoins < item.price) {
-    //   await showInsufficientCoinsDialog(context, itemName: item.name, required: item.price, current: userCoins);
-    //   _shakeCtrl.forward(from: 0);
-    //   await widget.onDeniedTap();
-    //   return;
-    // }
+  
+    final int userCoins = 0; 
+    if (userCoins < item.price) {
+      await showInsufficientCoinsDialog(context, itemName: item.name, required: item.price, current: userCoins);
+      _shakeCtrl.forward(from: 0);
+      await widget.onDeniedTap();
+      return;
+    }
     final confirmed = await showConfirmPurchaseDialog(
       context,
       itemName: item.name,

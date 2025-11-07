@@ -6,6 +6,7 @@ import 'package:tora_frontend/features/child/screens/communication-non-verbale/c
 import 'package:tora_frontend/features/child/screens/recommendation-child/recommendation_child_screen.dart';
 import 'package:tora_frontend/features/child/services/self_regulation_service.dart';
 import 'package:tora_frontend/features/tora-pet/screens/tora_screen.dart';
+import 'package:tora_frontend/core/widgets/alert_win_coins_helper.dart';
 import 'package:tora_frontend/features/tora-pet/widgets/coins_widget.dart';
 
 class ChildMainScreen extends StatefulWidget {

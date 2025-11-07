@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 import 'package:tora_frontend/features/child/models/recommendation.dart';
+import 'package:tora_frontend/core/widgets/alert_win_coins_helper.dart';
 
 class RecommendationDetailScreen extends StatefulWidget {
   final RecommendationItem recommendation;
@@ -26,7 +27,11 @@ class _RecommendationDetailScreenState
         curve: Curves.easeInOut,
       );
     } else {
-      _showCompletionDialog();
+      // Recomendación completada
+      showCoinRewardDialog(context, 50, widget.recommendation.successMessage, () {
+        Navigator.of(context).pop(); // Cerrar el diálogo
+        
+      });
     }
   }
 
@@ -39,53 +44,6 @@ class _RecommendationDetailScreenState
         curve: Curves.easeInOut,
       );
     }
-  }
-
-  void _showCompletionDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevenir cerrar tocando fuera
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(
-              Icons.celebration,
-              color: widget.recommendation.iconColor,
-              size: 32,
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                '¡Entendido!',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          widget.recommendation.successMessage,
-          style: const TextStyle(fontSize: 16, height: 1.5),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop(); // Cerrar solo el diálogo
-              Navigator.of(context).pop(); // Volver a la pantalla anterior
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: widget.recommendation.iconColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Volver', style: TextStyle(fontSize: 16)),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
