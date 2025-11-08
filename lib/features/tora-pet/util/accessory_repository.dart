@@ -8,9 +8,9 @@ class AccessoryRepository extends ChangeNotifier {
   // Por qué: listas base “catálogo”. Única fuente de verdad.
   static final List<Accessory> _availableHats = [
     const Accessory(id: 'none', path: '', name: 'Sin Sombrero', price: 0, isBought: true),
-    const Accessory(id: 'pirata', path: 'assets/images/tora/cumple.png', name: 'Sombrero Pirata', price: 100, isBought: false),
-    const Accessory(id: 'santa', path: 'assets/images/tora/pirata_new.png', name: 'Gorro de Santa', price: 100, isBought: false),
-    const Accessory(id: 'andaluz', path: 'assets/images/tora/test.png', name: 'Sombrero Andaluz', price: 100, isBought: false),
+    const Accessory(id: 'cumple', path: 'assets/images/tora/cumple.png', name: 'Sombrero De Cumpleaños', price: 100, isBought: false),
+    const Accessory(id: 'pirata', path: 'assets/images/tora/pirata_new.png', name: 'Gorro de Pirata', price: 100, isBought: false),
+    const Accessory(id: 'sombrero_negro', path: 'assets/images/tora/test.png', name: 'Sombrero Negro', price: 100, isBought: false),
     const Accessory(id: 'sombrero_de_paja', path: 'assets/images/tora/sombrero_de_paja.png', name: 'Sombrero de Paja', price: 100, isBought: false),
     const Accessory(id: 'sombrero_de_copa', path: 'assets/images/tora/sombrero_de_copa.png', name: 'Sombrero de Copa', price: 100, isBought: false),
   ];
