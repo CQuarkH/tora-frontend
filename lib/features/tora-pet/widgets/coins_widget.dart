@@ -1,39 +1,40 @@
+// lib/features/tora-pet/widgets/coins_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:tora_frontend/features/tora-pet/services/tora_coins_service.dart';
-import 'package:tora_frontend/features/tora-pet/models/coin.dart';
+import 'package:provider/provider.dart';
+import 'package:tora_frontend/features/tora-pet/services/coins_state.dart';
 
 class CoinsWidget extends HookWidget {
   const CoinsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final coins = useState<Coin?>(null);
-    final isLoading = useState(true);
+    final coinsState = context.watch<CoinsState>(); 
 
+    // Carga inicial una sola vez
     useEffect(() {
-      ToraCoinsService.getCoins()
-          .then((result) {
-            coins.value = result;
-            isLoading.value = false;
-          })
-          .catchError((_) {
-            coins.value = null;
-            isLoading.value = false;
-          });
+      coinsState.ensureLoaded();
       return null;
-    }, []);
+    }, [coinsState]);
 
-    if (isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
+    final int value = coinsState.coins ?? 0;
+    final bool loading = coinsState.isLoading && coinsState.coins == null;
+
+    if (loading) {
+      return const SizedBox(
+        width: 44,
+        height: 44,
+        child: Center(
+          child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+      );
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
-        
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -44,32 +45,37 @@ class CoinsWidget extends HookWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Icono de la moneda
-          Container(
-            width: 28,
-            height: 28,
-            decoration: const BoxDecoration(shape: BoxShape.circle),
-            child: Image.asset(
-              'assets/images/tora/tora_coin.png',
-              fit: BoxFit.contain,
+          // Icono
+          SizedBox(
+            width: 24,
+            height: 24,
+            child: Image.asset('assets/images/tora/tora_coin.png', fit: BoxFit.contain),
+          ),
+          const SizedBox(width: 6),
+          // Valor con animación
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            transitionBuilder: (child, anim) => FadeTransition(opacity: anim, child: child),
+            child: Text(
+              '$value',
+              key: ValueKey<int>(value),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
             ),
           ),
-
-          // Separador
-          const SizedBox(width: 8),
-
-          // Cantidad
-          Text(
-            coins.value != null ? coins.value!.toString() : '0',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 18,
-              letterSpacing: 0.5,
+          // Spinner pequeño si está actualizando en segundo plano
+          if (coinsState.isLoading) ...[
+            const SizedBox(width: 6),
+            const SizedBox(
+              width: 12,
+              height: 12,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
             ),
-          ),
+          ],
         ],
       ),
     );

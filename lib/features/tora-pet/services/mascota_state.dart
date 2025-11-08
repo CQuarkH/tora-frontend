@@ -1,118 +1,93 @@
-// lib/features/tora-pet/state/mascota_state.dart
+// lib/features/tora-pet/state/mascota_state.dart  (agrega attemptBuy*)
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tora_frontend/features/tora-pet/models/accessory.dart';
 import 'package:tora_frontend/features/tora-pet/models/background.dart';
+import 'package:tora_frontend/features/tora-pet/services/coins_state.dart';
 import 'package:tora_frontend/features/tora-pet/util/accesori_adjustament.dart';
 import 'package:tora_frontend/features/tora-pet/util/accessory_repository.dart';
+import 'package:tora_frontend/features/tora-pet/widgets/dialog_helpers_tora.dart';
 
 class MascotaState extends ChangeNotifier {
   final AccessoryRepository repo;
-  MascotaState(this.repo) {
-    repo.addListener(notifyListeners);
-  }
+  MascotaState(this.repo) { repo.addListener(notifyListeners); }
 
-  // IDs actuales (seguro empezar con 'none')
   String _currentHatId = 'none';
   String _currentGlassesId = 'none';
   String _currentBackgroundId = 'none';
 
-  // Exponer listas reactivas
   List<Accessory> get availableHats => repo.hats;
   List<Accessory> get availableGlasses => repo.glasses;
 
-  // Flag simple de "cargado"
   bool get isReady => availableHats.isNotEmpty && availableGlasses.isNotEmpty;
 
-  // Helpers seguros
-  Accessory? _findById(List<Accessory> list, String id) {
-    if (list.isEmpty) return null;
-    for (final a in list) {
-      if (a.id == id) return a;
-    }
-    // fallback: intenta 'none', sino null
-    for (final a in list) {
-      if (a.id == 'none') return a;
-    }
-    return null;
-  }
-
-  // SOMBREROS
   String get currentHatId => _currentHatId;
-  String? get currentHatPath {
-    final a = _findById(availableHats, _currentHatId);
-    return a?.path;
-  }
+  String? get currentHatPath =>
+      availableHats.where((h) => h.id == _currentHatId).map((e) => e.path).cast<String?>().firstWhere((_) => true, orElse: () => null);
+  HatAdjustment get currentHatAdjustment => hatAdjustments[_currentHatId] ?? (hatAdjustments['none'] ?? hatAdjustments.values.first);
 
-  HatAdjustment get currentHatAdjustment {
-    // fallback a 'none' -> 'pirata' -> primer ajuste definido
-    if (hatAdjustments.containsKey(_currentHatId)) {
-      return hatAdjustments[_currentHatId]!;
-    }
-    if (hatAdjustments.containsKey('none')) {
-      return hatAdjustments['none']!;
-    }
-    return hatAdjustments['pirata'] ?? hatAdjustments.values.first;
-  }
-
-  // LENTES
   String get currentGlassesId => _currentGlassesId;
-  String? get currentGlassesPath {
-    final a = _findById(availableGlasses, _currentGlassesId);
-    return a?.path;
-  }
+  String? get currentGlassesPath =>
+      availableGlasses.where((g) => g.id == _currentGlassesId).map((e) => e.path).cast<String?>().firstWhere((_) => true, orElse: () => null);
+  GlassesAdjustment get currentGlassesAdjustment => glassesAdjustments[_currentGlassesId] ?? (glassesAdjustments['none'] ?? glassesAdjustments.values.first);
 
-  GlassesAdjustment get currentGlassesAdjustment {
-    if (glassesAdjustments.containsKey(_currentGlassesId)) {
-      return glassesAdjustments[_currentGlassesId]!;
-    }
-    if (glassesAdjustments.containsKey('none')) {
-      return glassesAdjustments['none']!;
-    }
-    return glassesAdjustments['negros'] ?? glassesAdjustments.values.first;
-  }
-
-  // FONDOS
   String get currentBackgroundId => _currentBackgroundId;
-  String? get currentBackgroundPath {
-    final bg = availableBackgrounds
-        .where((b) => b.id == _currentBackgroundId)
-        .cast<Background?>()
-        .firstWhere((_) => true, orElse: () => null);
-    return bg?.path;
-  }
+  String? get currentBackgroundPath =>
+      availableBackgrounds.where((b) => b.id == _currentBackgroundId).map((b) => b.path).cast<String?>().firstWhere((_) => true, orElse: () => null);
 
-  // Mutadores
-  void changeHat(String newHatId) {
-    _currentHatId = newHatId;
+  void changeHat(String id) { _currentHatId = id; notifyListeners(); }
+  void changeGlasses(String id) { _currentGlassesId = id; notifyListeners(); }
+  void changeBackground(String id) { _currentBackgroundId = id; notifyListeners(); }
+
+  // Compra integral: valida saldo (CoinsState) + confirma + descuenta + marca comprado + autoselecciona
+  Future<void> attemptBuyHat(BuildContext context, Accessory hat) async {
+    final coinsState = context.read<CoinsState>();
+    await coinsState.ensureLoaded();
+
+    final coins = coinsState.coins ?? 0;
+    if (coins < hat.price) {
+      await showInsufficientCoinsDialog(context, itemName: hat.name, required: hat.price, current: coins);
+      return;
+    }
+
+    final confirmed = await showConfirmPurchaseDialog(
+      context,
+      itemName: hat.name,
+      price: hat.price,
+      currentCoins: coins,
+    );
+    if (confirmed != true) return;
+
+    await coinsState.deduct(hat.price);
+    await repo.buyById(AccessoryKind.hat, hat.id);
+    _currentHatId = hat.id;
     notifyListeners();
   }
 
-  void changeGlasses(String newGlassesId) {
-    _currentGlassesId = newGlassesId;
-    notifyListeners();
-  }
+  Future<void> attemptBuyGlasses(BuildContext context, Accessory glasses) async {
+    final coinsState = context.read<CoinsState>();
+    await coinsState.ensureLoaded();
 
-  void changeBackground(String newBackgroundId) {
-    _currentBackgroundId = newBackgroundId;
-    notifyListeners();
-  }
+    final coins = coinsState.coins ?? 0;
+    if (coins < glasses.price) {
+      await showInsufficientCoinsDialog(context, itemName: glasses.name, required: glasses.price, current: coins);
+      return;
+    }
 
-  // Compra (repo notifica y listas se reconstruyen)
-  Future<void> buyHat(String hatId) async {
-    await repo.buyById(AccessoryKind.hat, hatId);
-    _currentHatId = hatId; // autoseleccionar
-    notifyListeners();
-  }
+    final confirmed = await showConfirmPurchaseDialog(
+      context,
+      itemName: glasses.name,
+      price: glasses.price,
+      currentCoins: coins,
+    );
+    if (confirmed != true) return;
 
-  Future<void> buyGlasses(String glassesId) async {
-    await repo.buyById(AccessoryKind.glasses, glassesId);
-    _currentGlassesId = glassesId;
+    await coinsState.deduct(glasses.price);
+    await repo.buyById(AccessoryKind.glasses, glasses.id);
+    _currentGlassesId = glasses.id;
     notifyListeners();
   }
 
   @override
-  void dispose() {
-    repo.removeListener(notifyListeners);
-    super.dispose();
-  }
+  void dispose() { repo.removeListener(notifyListeners); super.dispose(); }
 }

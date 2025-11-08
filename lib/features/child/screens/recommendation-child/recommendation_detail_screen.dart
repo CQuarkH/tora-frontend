@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:tora_frontend/core/theme/tora_theme.dart';
 import 'package:tora_frontend/features/child/models/recommendation.dart';
 import 'package:tora_frontend/core/widgets/alert_win_coins_helper.dart';
+import 'package:tora_frontend/features/tora-pet/services/coins_state.dart';
 
 class RecommendationDetailScreen extends StatefulWidget {
   final RecommendationItem recommendation;
@@ -28,13 +31,11 @@ class _RecommendationDetailScreenState
       );
     } else {
       // Recomendación completada
-      showCoinRewardDialog(context, 50, widget.recommendation.successMessage, () {
-        Navigator.of(context).pop(); // Cerrar el diálogo
-        
-      });
-    }
+  
+      showCoinRewardDialog(context, coinsWon: 1000, message: widget.recommendation.successMessage);
+      Navigator.of(context).pop();
   }
-
+  }
   void _previousStep() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);

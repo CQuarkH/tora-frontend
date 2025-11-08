@@ -102,6 +102,7 @@ class ChildDayDetailScreen extends HookWidget {
           : TaskStatus.PENDING;
 
       try {
+        print('Toggling task $taskId to status ${newStatus.name}');
         final updatedTask = await CalendarService.updateTask(
           taskId: taskId,
           updateData: {'status': newStatus.name},

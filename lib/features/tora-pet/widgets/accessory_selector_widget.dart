@@ -1,16 +1,15 @@
-// lib/features/tora-pet/widgets/accessory_selector.dart
+// lib/features/tora-pet/widgets/accessory_selector_widget.dart  (tile delega compra a onBuy)
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tora_frontend/features/tora-pet/models/accessory.dart';
-import 'package:tora_frontend/features/tora-pet/widgets/dialog_helpers_tora.dart';
 
 class AccessorySelector extends StatefulWidget {
   final List<Accessory> items;
   final String currentId;
   final void Function(String) onSelect;
-  final Future<void> Function(Accessory)? onBuy; 
+  final Future<void> Function(Accessory)? onBuy;
 
   const AccessorySelector({
     required this.items,
@@ -46,7 +45,6 @@ class _AccessorySelectorState extends State<AccessorySelector> {
       child: Wrap(
         spacing: 10,
         runSpacing: 10,
-        alignment: WrapAlignment.start,
         children: widget.items.map((item) {
           final isSelected = item.id == widget.currentId;
           return _AccessoryTile(
@@ -58,7 +56,6 @@ class _AccessorySelectorState extends State<AccessorySelector> {
             },
             onDeniedTap: () async {
               HapticFeedback.mediumImpact();
-              // await _player.play(AssetSource('sounds/denied.mp3'));
             },
             onBuy: widget.onBuy,
           );
@@ -94,7 +91,10 @@ class _AccessoryTileState extends State<_AccessoryTile>
   @override
   void initState() {
     super.initState();
-    _shakeCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
+    _shakeCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
   }
 
   @override
@@ -110,35 +110,17 @@ class _AccessoryTileState extends State<_AccessoryTile>
       await widget.onAllowedTap();
       return;
     }
-
-  
-    final int userCoins = 0; 
-    if (userCoins < item.price) {
-      await showInsufficientCoinsDialog(context, itemName: item.name, required: item.price, current: userCoins);
-      _shakeCtrl.forward(from: 0);
-      await widget.onDeniedTap();
+    if (widget.onBuy != null) {
+      await widget.onBuy!(item); // compra/validación la hace MascotaState
       return;
     }
-    final confirmed = await showConfirmPurchaseDialog(
-      context,
-      itemName: item.name,
-      price: item.price,
-      currentCoins: 0, // TODO: reemplazar con coins reales si quieres mostrar
-    );
-    if (confirmed == true && widget.onBuy != null) {
-      await widget.onBuy!(item);
-      await widget.onAllowedTap();
-      return;
-    }
-
     _shakeCtrl.forward(from: 0);
     await widget.onDeniedTap();
   }
 
   double _shakeOffset() {
     final t = _shakeCtrl.value;
-    const oscillations = 4.0;
-    const amplitude = 6.0;
+    const oscillations = 4.0, amplitude = 6.0;
     return math.sin(t * math.pi * oscillations) * amplitude * (1 - t);
   }
 
@@ -152,24 +134,30 @@ class _AccessoryTileState extends State<_AccessoryTile>
       baseImage = const Center(
         child: Text(
           'NONE',
-          style: TextStyle(fontSize: 10, color: Colors.black54, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.black54,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       );
     } else {
       baseImage = Image.asset(item.path, fit: BoxFit.contain);
     }
 
-    // Badge de precio (solo bloqueados y no "none")
     Widget content = Stack(
       clipBehavior: Clip.none,
       children: [
         baseImage,
-       
         if (isLocked)
           Positioned(
-            bottom: -8,
-            right: -8,
-            child: Image.asset('assets/images/tora/lock_icon.png', width: 16, height: 16),
+            bottom: -4,
+            right: 2,
+            child: Image.asset(
+              'assets/images/tora/lock_icon.png',
+              width: 16,
+              height: 16,
+            ),
           ),
         if (isLocked && item.id != 'none')
           Positioned(
@@ -189,17 +177,30 @@ class _AccessoryTileState extends State<_AccessoryTile>
           opacity: isLocked ? 0.5 : 1.0,
           child: AnimatedBuilder(
             animation: _shakeCtrl,
-            builder: (context, child) => Transform.translate(offset: Offset(_shakeOffset(), 0), child: child),
+            builder: (context, child) => Transform.translate(
+              offset: Offset(_shakeOffset(), 0),
+              child: child,
+            ),
             child: Container(
               width: 70,
               height: 70,
               decoration: BoxDecoration(
-                color: widget.isSelected ? Colors.blue.shade100 : Colors.grey.shade100,
+                color: widget.isSelected
+                    ? Colors.blue.shade100
+                    : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 3, offset: const Offset(0, 2))],
-                border: Border.all(color: widget.isSelected ? Colors.blue : Colors.transparent, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 3,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: Border.all(
+                  color: widget.isSelected ? Colors.blue : Colors.transparent,
+                  width: 3,
+                ),
               ),
-              padding: const EdgeInsets.all(8.0),
               child: content,
             ),
           ),

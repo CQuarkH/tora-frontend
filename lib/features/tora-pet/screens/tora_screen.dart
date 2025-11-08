@@ -7,6 +7,8 @@ import 'package:tora_frontend/features/tora-pet/services/mascota_state.dart';
 import 'package:tora_frontend/features/tora-pet/widgets/accessory_selector_widget.dart';
 import 'package:tora_frontend/features/tora-pet/widgets/background_selector_widget.dart';
 
+
+
 class ToraScreen extends HookWidget {
   const ToraScreen({super.key});
 
@@ -14,14 +16,12 @@ class ToraScreen extends HookWidget {
   Widget build(BuildContext context) {
     final mascotaState = context.watch<MascotaState>();
 
-    // ⛑️ Evita “Bad state: No element” mientras carga
     if (!mascotaState.isReady) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
+    
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -33,31 +33,27 @@ class ToraScreen extends HookWidget {
               child: Container(
                 width: 300,
                 height: 300,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
                 child: MascotaCanvas(mascotaState: mascotaState),
               ),
             ),
             const SizedBox(height: 30),
 
-            const Text('Selecciona el Sombrero:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text('Selecciona el Sombrero:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             AccessorySelector(
               items: mascotaState.availableHats,
               currentId: mascotaState.currentHatId,
               onSelect: mascotaState.changeHat,
-              onBuy: (acc) => mascotaState.buyHat(acc.id),
+              onBuy: (acc) => mascotaState.attemptBuyHat(context, acc),
             ),
             const SizedBox(height: 20),
 
-            const Text('Selecciona los Lentes:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text('Selecciona los Lentes:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             AccessorySelector(
               items: mascotaState.availableGlasses,
               currentId: mascotaState.currentGlassesId,
               onSelect: mascotaState.changeGlasses,
-              onBuy: (acc) => mascotaState.buyGlasses(acc.id),
+              onBuy: (acc) => mascotaState.attemptBuyGlasses(context, acc),
             ),
           ],
         ),
@@ -76,29 +72,33 @@ class MascotaCanvas extends HookWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final stackWidth = constraints.maxWidth;
-        final stackHeight = constraints.maxHeight;
+        final double stackWidth = constraints.maxWidth;
+        final double stackHeight = constraints.maxHeight;
 
-        const toraBaseWidthPercentage = 0.80;
-        final toraBaseWidth = stackWidth * toraBaseWidthPercentage;
-        final toraBaseLeft = stackWidth * (1 - toraBaseWidthPercentage) / 2;
+        // --- BASE ---
+        const double toraBaseWidthPercentage = 0.80;
+        final double toraBaseWidth = stackWidth * toraBaseWidthPercentage;
+        final double toraBaseLeft = stackWidth * (1 - toraBaseWidthPercentage) / 2;
 
+        // --- AJUSTE SOMBRERO ---
         final hatAdj = mascotaState.currentHatAdjustment;
-        final hatWidth = stackWidth * hatAdj.widthPercentage;
-        final hatLeft = stackWidth * hatAdj.leftPercentage;
-        final hatTop = stackHeight * hatAdj.topPercentage;
+        final double hatWidth = stackWidth * hatAdj.widthPercentage;
+        final double hatLeft = stackWidth * hatAdj.leftPercentage;
+        final double hatTop = stackHeight * hatAdj.topPercentage;
 
+        // --- AJUSTE LENTES ---
         final glassesAdj = mascotaState.currentGlassesAdjustment;
-        final glassesWidth = stackWidth * glassesAdj.widthPercentage;
-        final glassesLeft = stackWidth * glassesAdj.leftPercentage;
-        final glassesTop = stackHeight * glassesAdj.topPercentage;
+        final double glassesWidth = stackWidth * glassesAdj.widthPercentage;
+        final double glassesLeft = stackWidth * glassesAdj.leftPercentage;
+        final double glassesTop = stackHeight * glassesAdj.topPercentage;
 
         final hatPath = mascotaState.currentHatPath;
         final glassesPath = mascotaState.currentGlassesPath;
 
         return Stack(
           clipBehavior: Clip.none,
-          children: [
+          children: <Widget>[
+            // Fondo
             if (mascotaState.currentBackgroundId != 'none' &&
                 mascotaState.currentBackgroundPath != null)
               Positioned.fill(
@@ -107,6 +107,8 @@ class MascotaCanvas extends HookWidget {
                   fit: BoxFit.cover,
                 ),
               ),
+
+            // Base
             Positioned(
               left: toraBaseLeft,
               bottom: 0,
@@ -116,6 +118,8 @@ class MascotaCanvas extends HookWidget {
                 fit: BoxFit.contain,
               ),
             ),
+
+            // Sombrero animado
             Positioned(
               left: hatLeft,
               top: hatTop,
@@ -135,6 +139,8 @@ class MascotaCanvas extends HookWidget {
                       ),
               ),
             ),
+
+            // Lentes animados
             Positioned(
               left: glassesLeft,
               top: glassesTop,
