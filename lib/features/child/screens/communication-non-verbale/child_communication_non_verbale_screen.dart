@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'package:tora_frontend/features/child/screens/communication-non-verbale/widgets/category_section.dart';
@@ -7,10 +8,11 @@ import 'dart:convert';
 
 class ChildCommunicationNonVerbaleScreen extends HookWidget {
   const ChildCommunicationNonVerbaleScreen({super.key});
+  String get baseUrl => dotenv.env['API_URL'] ?? 'http://localhost:3000';
 
   Future<List<Map<String, dynamic>>> fetchCategory(String category) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.11:3000/pictograms/$category'),
+      Uri.parse('$baseUrl/pictograms/$category'),
 
 
     );
