@@ -14,6 +14,7 @@ class ChildLoginScreen extends HookWidget {
   Widget build(BuildContext context) {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
+    final isLoading = useState(false);
     final obscureText = useState(true);
     final _authService = useMemoized(() => AuthService());
 
@@ -21,6 +22,7 @@ class ChildLoginScreen extends HookWidget {
       if (emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty) {
         try {
+          isLoading.value = true;
           final loginResponse = await _authService.login(
             email: emailController.text.trim(),
             password: passwordController.text,
@@ -37,6 +39,8 @@ class ChildLoginScreen extends HookWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error de inicio de sesión: $e')),
           );
+        } finally {
+          isLoading.value = false;
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -92,9 +96,10 @@ class ChildLoginScreen extends HookWidget {
                 const SizedBox(height: 30),
                 LoginCard(
                   emailController: emailController,
+                  loading: isLoading,
                   passwordController: passwordController,
                   obscureText: obscureText,
-                  onLogin: () => _handleLogin(),
+                  onLogin: () async => await _handleLogin(),
                   showCreateAccount:
                       false, // No mostrar opción de registro para niños
                 ),

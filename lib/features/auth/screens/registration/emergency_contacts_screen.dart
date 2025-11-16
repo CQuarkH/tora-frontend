@@ -17,7 +17,7 @@ class EmergencyContactsScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final nameController = useTextEditingController();
-    final phoneController = useTextEditingController(text: '+56 9 ');
+    final emailController = useTextEditingController();
     final selectedRelation = useState<String?>('Padre/Madre');
 
     // Opciones de relación predefinidas
@@ -37,10 +37,10 @@ class EmergencyContactsScreen extends HookWidget {
 
     void addEmergencyContact() {
       final name = nameController.text.trim();
-      final phone = phoneController.text.trim();
+      final email = emailController.text.trim();
       final relation = selectedRelation.value ?? '';
 
-      if (name.isEmpty || phone.isEmpty || relation.isEmpty) {
+      if (name.isEmpty || email.isEmpty || relation.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Por favor, completa todos los campos'),
@@ -50,12 +50,12 @@ class EmergencyContactsScreen extends HookWidget {
         return;
       }
 
-      // Validación básica de teléfono
-      final cleanPhone = phone.replaceAll(RegExp(r'[\\s\\-\\(\\)\\+]'), '');
-      if (cleanPhone.length < 8) {
+      // Validación básica de email
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (!emailRegex.hasMatch(email)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Por favor, ingresa un número válido'),
+            content: Text('Por favor, ingresa un correo electrónico válido'),
             backgroundColor: Colors.red,
           ),
         );
@@ -63,12 +63,17 @@ class EmergencyContactsScreen extends HookWidget {
       }
 
       // Agregar contacto
-      final newContact = {'name': name, 'phone': phone, 'relation': relation};
+      final newContact = {
+        'name': name,
+        'email': email,
+        'relation': relation,
+        'phone': '+569 1234 5678',
+      };
       emergencyContacts.value = [...emergencyContacts.value, newContact];
 
       // Limpiar campos
       nameController.clear();
-      phoneController.text = '+56 9 ';
+      emailController.clear();
       selectedRelation.value = 'Familiar cercano/a';
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,7 +139,7 @@ class EmergencyContactsScreen extends HookWidget {
 
             Center(
               child: Text(
-                'Estos contactos serán alertados cuando se active el botón de emergencia',
+                'Estos contactos serán alertados por correo cuando se active el botón de emergencia',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: context.mediumText),
@@ -185,23 +190,14 @@ class EmergencyContactsScreen extends HookWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Teléfono
+                  // Email
                   TextField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.phone,
-                    onChanged: (value) {
-                      // Proteger el prefijo +56 9
-                      if (!value.startsWith('+56 9 ')) {
-                        phoneController.text = '+56 9 ';
-                        phoneController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: phoneController.text.length),
-                        );
-                      }
-                    },
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      labelText: 'Número WhatsApp',
-                      hintText: '+56 9 1234 5678',
-                      prefixIcon: Icon(Icons.phone, color: context.mediumText),
+                      labelText: 'Correo Electrónico',
+                      hintText: 'ejemplo@correo.com',
+                      prefixIcon: Icon(Icons.email, color: context.mediumText),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -311,7 +307,7 @@ class EmergencyContactsScreen extends HookWidget {
                                         ),
                                   ),
                                   Text(
-                                    contact['phone']!,
+                                    contact['email']!,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
