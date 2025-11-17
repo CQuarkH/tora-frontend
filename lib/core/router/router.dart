@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tora_frontend/core/services/api_client.dart';
 import 'package:tora_frontend/features/auth/models/user.dart';
 import 'package:tora_frontend/features/auth/screens/fork_users_screen.dart';
 import 'package:tora_frontend/features/auth/screens/child_login_screen.dart';
@@ -36,29 +37,62 @@ class UserSession {
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   debugLogDiagnostics: true,
+  navigatorKey: ApiClient.navigatorKey,
   redirect: (BuildContext context, GoRouterState state) async {
     final authService = AuthService();
-    final isLoggedIn = await authService.isAuthenticated();
+    final apiClient = ApiClient();
     final location = state.uri.path;
+
+    print('🔄 Router redirect - Location: $location');
 
     // Rutas de autenticación
     const authRoutes = ['/', '/child-login', '/parent-login', '/register'];
 
-    // Si no está logueado y trata de acceder a rutas protegidas
+    // ✅ PASO 1: Verificar si hay token guardado
+    final isLoggedIn = await authService.isAuthenticated();
+    print('🔐 Token guardado: $isLoggedIn');
+
+    // Si no hay token y trata de acceder a rutas protegidas
     if (!isLoggedIn && !authRoutes.contains(location)) {
+      print('❌ Sin token - Redirigiendo a /');
       return '/';
     }
 
-    // Si está logueado y trata de acceder a auth, redirigir según rol
-    if (isLoggedIn && authRoutes.contains(location)) {
-      final userRole = await authService.getCurrentUserRole();
-      if (userRole == UserRole.CHILD) {
-        return '/child';
-      } else if (userRole == UserRole.PARENT) {
-        return '/parent';
+    // ✅ PASO 2: Si hay token, validar que siga siendo válido
+    if (isLoggedIn) {
+      print('🔍 Validando token...');
+      final isTokenValid = await apiClient.validateToken();
+
+      if (!isTokenValid) {
+        print('❌ Token inválido o expirado - Limpiando sesión');
+        await authService.logout();
+        UserSession.logout();
+
+        // Si estaba en una ruta protegida, redirigir a login
+        if (!authRoutes.contains(location)) {
+          print('↩️ Redirigiendo a /');
+          return '/';
+        }
+      } else {
+        print('✅ Token válido');
+
+        // Si está en una ruta de auth con token válido, redirigir según rol
+        if (authRoutes.contains(location)) {
+          final userRole = await authService.getCurrentUserRole();
+          print('👤 Rol de usuario: $userRole');
+
+          if (userRole == UserRole.CHILD) {
+            print('↩️ Redirigiendo a /child');
+            return '/child';
+          } else if (userRole == UserRole.PARENT) {
+            print('↩️ Redirigiendo a /parent');
+            return '/parent';
+          }
+        }
       }
     }
 
+    print('✅ Sin redirección necesaria');
     return null;
   },
   routes: <RouteBase>[
