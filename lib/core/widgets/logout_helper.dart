@@ -4,12 +4,12 @@ import 'package:tora_frontend/features/auth/services/auth_service.dart';
 
 class LogoutHelper {
   static void showLogoutDialog(
-    BuildContext context, {
+    BuildContext parentContext, {
     String? customMessage,
   }) async {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
+      context: parentContext,
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('¿Cerrar sesión?'),
           content: Text(
@@ -20,13 +20,13 @@ class LogoutHelper {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop();
-                await _performLogout(context);
+                Navigator.of(dialogContext).pop();
+                await _performLogout(parentContext);
               },
               child: const Text(
                 'Cerrar sesión',
